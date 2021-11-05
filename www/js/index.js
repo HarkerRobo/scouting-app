@@ -5,9 +5,9 @@ function onDeviceReady() {
 
     const sdk = new ScoutingAppSDK(document.querySelector("#app"), {
         theme: {
-            backgroundColor: "#1b2f5a"
+            backgroundColor: "#a0c1d8"
         }
     });
-    
+
     sdk.showStartingPage();
 }

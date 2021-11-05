@@ -24,7 +24,7 @@ const ScoutingAppSDK = function(element, config) {
 			configuration.theme = {};
 		}
 		if(configuration.theme.backgroundColor == null || configuration.theme.backgroundColor == "") {
-			configuration.theme.backgroundColor = "#ffffff";
+			configuration.theme.backgroundColor = "#a0c1d8";
 		}
 		return configuration;
 	}
