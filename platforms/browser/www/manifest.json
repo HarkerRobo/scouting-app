@@ -1,0 +1,17 @@
+{
+  "background_color": "#FFF",
+  "display": "standalone",
+  "name": "HarkerRoboScoutingApp",
+  "short_name": "HarkerRoboScoutingApp",
+  "version": "com.kabirramzan.harkerrobo.scoutingapp",
+  "description": "The scouting application for Harker Robotics (FRC team 1072)",
+  "author": "Kabir Ramzan",
+  "icons": [
+    {
+      "src": "www/img/logo.png",
+      "type": "image/png",
+      "sizes": "undefinedxundefined"
+    }
+  ],
+  "start_url": "index.html"
+}
