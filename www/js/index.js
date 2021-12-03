@@ -10,5 +10,5 @@ function onDeviceReady() {
         }
     });
 
-    sdk.showStartingPage();
+    sdk.showLoginPage();
 }
