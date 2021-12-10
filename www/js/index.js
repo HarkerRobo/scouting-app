@@ -11,5 +11,5 @@ function onDeviceReady() {
     });
 
     sdk.showLoginPage();
-    sdk.showQRCodes(["https://robotics.harker.org/", "you -> are orz"]);
+    // sdk.showQRCodes(["https://robotics.harker.org/", "you -> are orz"]);
 }
