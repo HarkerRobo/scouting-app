@@ -113,24 +113,33 @@ const ScoutingAppSDK = function(element, config) {
 
 	this.showHomePage = () => {
 		return new Promise(async (resolve, reject) => {
-			element.innerHTML = `
-
-			`;
+			if(await this.getUser() == null || await this.getUser() == "") {
+				await this.showLoginPage();
+			} else {
+				element.innerHTML = `
+					<div class="home-window">
+						<h1>${await this.getUser()}</h1>
+						<p class="boltman-quote">${await this.getQuote()}</p>
+					</div>
+				`;
+			}
 			resolve();
 		});
 	}
 
 	this.getQuote = () => {
-		let possibleQuotes = importantQuotes.length * 3 + quotes.length;
-		let randomQuoteID = Math.floor(Math.random() * possibleQuotes);
+		return new Promise(async (resolve, reject) => {
+			let possibleQuotes = importantQuotes.length * 3 + quotes.length;
+			let randomQuoteID = Math.floor(Math.random() * possibleQuotes);
 
-		let boltmanQuote = "";
-		if(randomQuoteID < importantQuotes.length * 3) {
-			boltmanQuote = importantQuotes[Math.floor(randomQuoteID / 3)];
-		} else {
-			boltmanQuote = quotes[randomQuoteID - importantQuotes.length * 3];
-		}
-		return "\"" + boltmanQuote + "\" --Boltman";
+			let boltmanQuote = "";
+			if(randomQuoteID < importantQuotes.length * 3) {
+				boltmanQuote = importantQuotes[Math.floor(randomQuoteID / 3)];
+			} else {
+				boltmanQuote = quotes[randomQuoteID - importantQuotes.length * 3];
+			}
+			resolve("\"" + boltmanQuote + "\" --Boltman");
+		});
 	}
 
 	this.login = (username, key) => {

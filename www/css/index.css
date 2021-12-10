@@ -123,3 +123,11 @@ body {
 	border: 4px solid var(--contentColor);
 	padding: 8px;
 }
+
+.home-window > h1 {
+	color: var(--contentColor);
+}
+
+.home-window > .boltman-quote {
+	color: var(--contentColor);
+}
