@@ -98,4 +98,27 @@ const ScoutingAppSDK = function(element, config) {
 		document.documentElement.style.setProperty('--contentColor', configuration.theme.contentColor);
 		return configuration;
 	}
+
+	this.getQRCodes = (strings) => {
+		let qrCodes = [];
+		for (let i = 0; i < strings.length; i++) {
+			let code = document.createElement("div");
+			let data = JSON.stringify({
+				content: strings[i],
+				total: strings.length,
+				index: i
+			})
+			new QRCode(code, data);
+			qrCodes.push(code)
+		}
+		return qrCodes;
+	}
+
+	this.showQRCodes = (strings) => {
+		let qrCodes = this.getQRCodes(strings)
+		for (const code of qrCodes) {
+			element.appendChild(code);
+		}
+	}
+
 }
