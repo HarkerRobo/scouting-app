@@ -1,0 +1,125 @@
+@font-face{
+	font-family: 'Roboto';
+	src: url(/fonts/Roboto/Roboto-Regular.ttf) format('ttf');
+	font-weight: 400;
+	font-style: normal;
+	font-display: auto;
+}
+
+@font-face {
+	font-family: 'Roboto';
+	src: url(/fonts/Roboto/Roboto-Medium.ttf) format('ttf');
+	font-weight: 500;
+	font-style: normal;
+	font-display: auto;
+}
+
+@font-face {
+	font-family: 'Roboto';
+	src: url(/fonts/Roboto/Roboto-Bold.ttf) format('ttf');
+	font-weight: 600;
+	font-style: normal;
+	font-display: auto;
+}
+
+@font-face {
+	font-family: 'Roboto';
+	src: url(/fonts/Roboto/Roboto-Italic.ttf) format('ttf');
+	font-weight: 400;
+	font-style: italic;
+	font-display: auto;
+}
+
+@font-face {
+	font-family: 'Roboto';
+	src: url(/fonts/Roboto/Roboto-MediumItalic.ttf) format('ttf');
+	font-weight: 500;
+	font-style: italic;
+	font-display: auto;
+}
+
+@font-face {
+	font-family: 'Roboto';
+	src: url(/fonts/Roboto/Roboto-BoldItalic.ttf) format('ttf');
+	font-weight: 600;
+	font-style: italic;
+	font-display: auto;
+}
+
+* {
+	font-family: 'Roboto', sans-serif;
+}
+
+body {
+	background-color: var(--backgroundColor);
+}
+
+.login-window {
+	position: absolute;
+	width: 350px;
+	max-width: calc(100% - 50px);
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	padding: 40px;
+	box-sizing: content-box;
+	border: 3px solid var(--contentColor);
+	border-radius: 20px;
+	box-shadow: 10px 10px 26px 0 var(--contentColor);
+}
+
+.login-window > h1 {
+	color: var(--contentColor);
+	font-size: 2.5em;
+	margin: 0;
+	margin-bottom: 10px;
+	width: 100%;
+	text-align: center;
+}
+
+.login-window > input {
+	background-color: var(--alternateBackgroundColor);
+	border: 2px solid var(--contentColor);
+	border-radius: 5px;
+	padding: 10px;
+	font-size: 1.5em;
+	color: var(--contentColor);
+	width: 100%;
+	box-sizing: border-box;
+	margin: 0;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	text-align: center;
+}
+
+.login-window > input:focus {
+	outline: 0;
+	border: 4px solid var(--contentColor);
+	padding: 8px;
+}
+
+.login-window > button {
+	background-color: var(--alternateBackgroundColor);
+	border: 2px solid var(--contentColor);
+	border-radius: 5px;
+	padding: 10px;
+	font-size: 1.5em;
+	color: var(--contentColor);
+	width: 100%;
+	box-sizing: border-box;
+	margin: 0;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	text-align: center;
+	cursor: pointer;
+}
+
+.login-window > button:focus {
+	outline: 0;
+}
+
+.login-window > button:active {
+	outline: 0;
+	border: 4px solid var(--contentColor);
+	padding: 8px;
+}
