@@ -84,6 +84,8 @@ const ScoutingAppSDK = function(element, config) {
         "winner winner chicken dinner"
     ]
 
+    const MAX_QR_LENGTH = 128;
+
 	this.showLoginPage = () => {
 		return new Promise(async (resolve, reject) => {
 			if(await this.getUser() == null || await this.getUser() == "") {
@@ -203,26 +205,38 @@ const ScoutingAppSDK = function(element, config) {
 		return configuration;
 	}
 
-	this.getQRCodes = (strings) => {
-		let qrCodes = [];
-		for (let i = 0; i < strings.length; i++) {
-			let code = document.createElement("div");
-			let data = JSON.stringify({
-				content: strings[i],
-				total: strings.length,
-				index: i
-			})
-			new QRCode(code, data);
-			qrCodes.push(code)
-		}
-		return qrCodes;
-	}
+	this.getQRCodes = (string) => {
+		return new Promise(async (resolve, reject) => {
+			let pause = (ms) => {
+				return new Promise(async (resolve, reject) => {
+					setTimeout(() => {
+						resolve();
+					}, ms);
+				});
+			}
 
-	this.showQRCodes = (strings) => {
-		let qrCodes = this.getQRCodes(strings)
-		for (const code of qrCodes) {
-			element.appendChild(code);
-		}
+			let codes = [];
+			let strings = [];
+			while(string.length > MAX_QR_LENGTH) {
+				strings.push(string.substring(0, MAX_QR_LENGTH));
+				string = string.substring(MAX_QR_LENGTH);
+			}
+			strings.push(string);
+			for(let i = 0; i < strings.length; i++) {
+				let code = document.createElement("div");
+				let data = JSON.stringify({
+					content: strings[i],
+					total: strings.length,
+					index: i
+				})
+				new QRCode(code, data);
+				while(code.querySelectorAll("img")[0].src == "") {
+					await pause(1);
+				}
+				codes.push(code.querySelectorAll("img")[0].src);
+			}
+			resolve(codes);
+		});
 	}
 
 }
