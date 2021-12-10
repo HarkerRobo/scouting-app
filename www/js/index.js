@@ -6,10 +6,12 @@ function onDeviceReady() {
     const sdk = new ScoutingAppSDK(document.querySelector("#app"), {
         theme: {
             backgroundColor: "#a0c1d8",
-            
+            alternateBackgroundColor: "#e5eef4",
+            contentColor: "#404040"
         }
     });
 
     sdk.showLoginPage();
     // sdk.showQRCodes(["https://robotics.harker.org/", "you -> are orz"]);
+    window.scoutingsdk = sdk;
 }
