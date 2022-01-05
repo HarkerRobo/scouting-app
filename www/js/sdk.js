@@ -81,7 +81,9 @@ const ScoutingAppSDK = function(element, config) {
         "NOT season",
         "This thread is a no win scenario and should end for the good of the game. Mods shut it down.",
         "I me thinks get a lot of silent likes and that is a-ok there are still critical thinkers here.",
-        "winner winner chicken dinner"
+        "winner winner chicken dinner",
+        "Scouting apps are good programming exercise, usefulness not determined. It’s like weigh watching apps, stock apps, horoscope apps. It makes you feels good and it’s fun to program",
+        "Tracking the right stuff in a game is important, does the scouting app do that? Do you trust the data? What insights are gained?"
     ]
 
     const MAX_QR_LENGTH = 128;

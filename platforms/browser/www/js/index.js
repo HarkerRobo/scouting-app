@@ -11,13 +11,13 @@ function onDeviceReady() {
 					[
 						{
 							type: "image",
-							src: ""
+							src: "/img/BluePowerPort.png"
 						}
 					],
 					[
 						{
 							type: "image",
-							src: "",
+							src: "/img/PowerCell.png",
 							align: "left"
 						},
 						{
@@ -57,7 +57,7 @@ function onDeviceReady() {
 					[
 						{
 							type: "image",
-							src: "",
+							src: "/img/ControlPanel.png",
 							align: "left"
 						},
 						{
@@ -139,13 +139,13 @@ function onDeviceReady() {
 					[
 						{
 							type: "image",
-							src: ""
+							src: "/img/BluePowerPort.png"
 						}
 					],
 					[
 						{
 							type: "image",
-							src: "",
+							src: "/img/PowerCell.png",
 							align: "left"
 						},
 						{
@@ -185,7 +185,7 @@ function onDeviceReady() {
 					[
 						{
 							type: "image",
-							src: "",
+							src: "/img/ControlPanel.png",
 							align: "left"
 						},
 						{
@@ -268,7 +268,7 @@ function onDeviceReady() {
 					[
 						{
 							type: "image",
-							src: ""
+							src: "/img/BlueShieldGenerator.png"
 						},
 						{
 							type: "slider",
