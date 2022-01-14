@@ -83,7 +83,12 @@ const ScoutingAppSDK = function(element, config) {
         "I me thinks get a lot of silent likes and that is a-ok there are still critical thinkers here.",
         "winner winner chicken dinner",
         "Scouting apps are good programming exercise, usefulness not determined. It’s like weigh watching apps, stock apps, horoscope apps. It makes you feels good and it’s fun to program",
-        "Tracking the right stuff in a game is important, does the scouting app do that? Do you trust the data? What insights are gained?"
+        "Tracking the right stuff in a game is important, does the scouting app do that? Do you trust the data? What insights are gained?",
+        "Always open your mind to what is possible.",
+        "But does an App track tendency? Does an App track where a robot likes to play? Does an app guarantee good data or bored scouts? Great drivers, Repair tendencies?",
+        "Its not about data , its the right data",
+        "Human processing blows away a computer except in certain tasks",
+        "Pen + Paper + Highlighter + Excel, much more configurable. It always perplexes me why tracikng 40-60 robots requires an app? Except to give programmers something to do?"
     ]
 
     const MAX_QR_LENGTH = 128;
@@ -105,7 +110,6 @@ const ScoutingAppSDK = function(element, config) {
 					let username = element.querySelector(".login-window > input[name='Username']").value;
 					let key = element.querySelector(".login-window > input[name='Key']").value;
 					await this.login(username, key);
-					console.log("showingLoginPage");
 					await this.showLoginPage();
 				}
 			} else {

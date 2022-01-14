@@ -1,4 +1,4 @@
-@font-face{
+@font-face {
 	font-family: 'Roboto';
 	src: url(/fonts/Roboto/Roboto-Regular.ttf) format('ttf');
 	font-weight: 400;
@@ -126,8 +126,10 @@ body {
 
 .home-window > h1 {
 	color: var(--contentColor);
+	text-align: center;
 }
 
 .home-window > .boltman-quote {
 	color: var(--contentColor);
+	text-align: center;
 }
