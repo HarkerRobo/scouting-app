@@ -258,6 +258,10 @@ function onDeviceReady() {
 				direction: "rows",
 				components: [
 					{
+						type: "title",
+						label: "UPLOAD"
+					},
+					{
 						type: "upload"
 					},
 					{
@@ -283,6 +287,10 @@ function onDeviceReady() {
 				direction: "rows",
 				components: [
 					{
+						type: "title",
+						label: "QR CODE"
+					},
+					{
 						type: "qrcode"
 					},
 					{
@@ -307,6 +315,10 @@ function onDeviceReady() {
 				type: "layout",
 				direction: "rows",
 				components: [
+					{
+						type: "title",
+						label: "COPY DATA"
+					},
 					{
 						type: "data"
 					},
@@ -344,6 +356,50 @@ function onDeviceReady() {
 			return "";
 		}
 	});
+
+	sdk.formatData = async (eventCode, matchNumber, teamNumber, data) => {
+		console.log(data);
+		let csv = [];
+		csv.push(matchNumber);
+		csv.push(teamNumber);
+		let color = await sdk.getTeamColor(eventCode, matchNumber, teamNumber);
+		csv.push(color);
+		csv.push(
+			JSON.stringify(
+				JSON.stringify(
+					data.auto_locations.map((loc) => {
+						return parseInt(loc.index);
+					}).concat(data.teleop_locations.map((loc) => {
+						return parseInt(loc.index);
+					}))
+				)
+			)
+		);
+		csv.push(
+			JSON.stringify(
+				JSON.stringify(
+					data.auto_locations.map((loc) => {
+						return loc.value;
+					}).concat(data.teleop_locations.map((loc) => {
+						return loc.value;
+					}))
+				)
+			)
+		);
+		csv.push(parseInt(data.climb))
+		csv.push(data.initiation_line ? "True" : "False");
+		csv.push(data.auto_locations.length);
+		csv.push(data.human_player ? "True" : "False");
+		csv.push(data.climb_time / 1000);
+		csv.push(data.brick_time / 1000);
+		csv.push(data.defense_time / 1000);
+		csv.push(JSON.stringify(await sdk.getUser()));
+		csv.push(JSON.stringify(data.notes));
+		console.log(csv);
+		let formatted = csv.join(",");
+		console.log(formatted)
+		return formatted;
+	}
 
 	sdk.showLoginPage();
 	window.scoutingsdk = sdk;

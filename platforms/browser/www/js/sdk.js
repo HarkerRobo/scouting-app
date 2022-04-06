@@ -111,6 +111,10 @@ const ScoutingAppSDK = function(element, config) {
 		return result;
     }
 
+    this.formatData = (eventCode, matchNumber, teamNumber, data) => {
+
+    }
+
 	this.showLoginPage = () => {
 		return new Promise(async (resolve, reject) => {
 			if(await this.getUser() == "") {
@@ -381,7 +385,7 @@ const ScoutingAppSDK = function(element, config) {
 				resolve(true);
 			}
 			resolve(false);
-			console.log(data);
+			// console.log(data);
 		});
 	}
 
@@ -514,7 +518,7 @@ const ScoutingAppSDK = function(element, config) {
 					for(let i = 0; i < gridElements.length; i++) {
 						gridElements[i].onclick = async (e) => {
 							let result = await this.showLocationPopup(e.target.getAttribute("data-index"), options, data[component.data] ?? defaultValue);
-							console.log(result);
+							// console.log(result);
 							if(result != null) {
 								let locationData = data[component.data] ?? defaultValue;
 								for(let j = 0; j < Math.abs(result[1]); j++) {
@@ -733,11 +737,29 @@ const ScoutingAppSDK = function(element, config) {
 				});
 				resolve(`<textarea class="component-textbox" placeholder="${this.escape(placeholder)}" data-id="${this.escape(id)}">${this.escape(data[component.data] ?? defaultValue)}</textarea>`);
 			} else if(component.type == "upload") {
+				let formatted = await this.formatData(eventCode, matchNumber, teamNumber, data);
 				resolve(``);
 			} else if(component.type == "qrcode") {
+				let formatted = await this.formatData(eventCode, matchNumber, teamNumber, data);
 				resolve(``);
 			} else if(component.type == "data") {
-				resolve(``);
+				let formatted = await this.formatData(eventCode, matchNumber, teamNumber, data);
+				resolve(`<textarea class="component-textbox" readonly>${this.escape(formatted)}</textarea>`);
+			}
+		});
+	}
+
+	this.getTeamColor = (eventCode, matchNumber, teamNumber) => {
+		return new Promise(async (resolve, reject) => {
+			let match = await this.getMatch(eventCode, matchNumber);
+			let redTeams = match.alliances.red.team_keys.map(team => team.replace("frc", ""));
+			let blueTeams = match.alliances.blue.team_keys.map(team => team.replace("frc", ""));
+			if(redTeams.includes(teamNumber)) {
+				resolve("red");
+			} else if(blueTeams.includes(teamNumber)) {
+				resolve("blue");
+			} else {
+				resolve("unknown");
 			}
 		});
 	}
