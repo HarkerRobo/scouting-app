@@ -131,6 +131,11 @@ const ScoutingAppSDK = function(element, config) {
 					await this.login(username, key);
 					await this.showLoginPage();
 				}
+				element.querySelector(".login-window > input[type='password']").onkeyup = async (e) => {
+					if(e.keyCode == 13) {
+						element.querySelector(".login-window > button").click();
+					}
+				}
 			} else {
 				await this.showHomePage();
 			}
@@ -154,7 +159,7 @@ const ScoutingAppSDK = function(element, config) {
 						<h1>1072 Scouting App</h1>
 						<h3>Signed in as ${this.escape(await this.getUser())}</h3>
 						<h2>Event Code:</h2>
-						<input class="event-code" value="${this.escape(_eventCode || await this.getEventCode())}" />
+						<input class="event-code" value="${this.escape(_eventCode || await this.getEventCode())}"${config.event.editable ? "" : " readonly"} />
 						<h2>Match Number:</h2>
 						<input class="match-number" type="number" min="0" value="${this.escape(_matchNumber)}" />
 						<h2>Team:</h2>
@@ -273,9 +278,11 @@ const ScoutingAppSDK = function(element, config) {
 
 	this.login = (username, key) => {
 		return new Promise(async (resolve, reject) => {
-			// TODO: check authentication
-			localStorage.setItem("loginUsername", username);
-			localStorage.setItem("loginKey", key);
+			let hashed = await this.hash(key);
+			if(config.upload.passwordHash == "" || config.upload.passwordHash == hashed) {
+				localStorage.setItem("loginUsername", username);
+				localStorage.setItem("loginKey", key);
+			}
 			resolve();
 		});
 	}
@@ -325,7 +332,7 @@ const ScoutingAppSDK = function(element, config) {
 	this.getEventCode = () => {
 		return new Promise(async (resolve, reject) => {
 			if(localStorage.getItem("eventCode") == null) {
-				resolve("");
+				resolve(config.event.code);
 			} else {
 				resolve(localStorage.getItem("eventCode"));
 			}
@@ -403,7 +410,7 @@ const ScoutingAppSDK = function(element, config) {
 
 	this.showLocationPopup = (index, options, locationData) => {
 		return new Promise(async (resolve, reject) => {
-			document.querySelector(".location-popup").innerHTML = `
+			element.querySelector(".location-popup").innerHTML = `
 				${options.map((option) => {
 					return `
 						<div>
@@ -416,23 +423,23 @@ const ScoutingAppSDK = function(element, config) {
 				}).join("")}
 				<button>Close</button>
 			`;
-			document.querySelector(".location-popup > button").onclick = async () => {
-				document.querySelector(".location-popup").classList.remove("location-popup-visible");
-				document.querySelector(".overlay").classList.remove("overlay-visible");
+			element.querySelector(".location-popup > button").onclick = async () => {
+				element.querySelector(".location-popup").classList.remove("location-popup-visible");
+				element.querySelector(".overlay").classList.remove("overlay-visible");
 				setTimeout(() => {
-					document.querySelector(".location-popup").style.display = "none";
-					document.querySelector(".overlay").style.display = "none";
+					element.querySelector(".location-popup").style.display = "none";
+					element.querySelector(".overlay").style.display = "none";
 				}, 200);
 				resolve();
 			}
-			let elements = document.querySelectorAll(".location-popup > div > button");
+			let elements = element.querySelectorAll(".location-popup > div > button");
 			for(let i = 0; i < elements.length; i++) {
 				elements[i].onclick = async () => {
-					document.querySelector(".location-popup").classList.remove("location-popup-visible");
-					document.querySelector(".overlay").classList.remove("overlay-visible");
+					element.querySelector(".location-popup").classList.remove("location-popup-visible");
+					element.querySelector(".overlay").classList.remove("overlay-visible");
 					setTimeout(() => {
-						document.querySelector(".location-popup").style.display = "none";
-						document.querySelector(".overlay").style.display = "none";
+						element.querySelector(".location-popup").style.display = "none";
+						element.querySelector(".overlay").style.display = "none";
 					}, 200);
 					resolve([
 						{
@@ -443,14 +450,16 @@ const ScoutingAppSDK = function(element, config) {
 					]);
 				}
 			}
-			document.querySelector(".overlay").style.display = "block";
-			document.querySelector(".location-popup").style.display = "block";
+			element.querySelector(".overlay").style.display = "block";
+			element.querySelector(".location-popup").style.display = "block";
 			setTimeout(() => {
-				document.querySelector(".overlay").classList.add("overlay-visible");
-				document.querySelector(".location-popup").classList.add("location-popup-visible");
+				element.querySelector(".overlay").classList.add("overlay-visible");
+				element.querySelector(".location-popup").classList.add("location-popup-visible");
 			}, 0);
 		});
 	}
+
+	let fieldOrientation = 0;
 
 	this.compileComponent = (eventCode, matchNumber, teamNumber, component = {}) => {
 		return new Promise(async (resolve, reject) => {
@@ -504,17 +513,19 @@ const ScoutingAppSDK = function(element, config) {
 				}
 				pendingFunctions.push(async () => {
 					await this.setData(component.data, data[component.data] ?? defaultValue);
-					document.querySelector(`[data-id="${this.escape(id)}"] > button`).onclick = async () => {
-						let grid = document.querySelector(`[data-id="${this.escape(id)}"] > .component-locations-container > .grid`);
+					element.querySelector(`[data-id="${this.escape(id)}"] > button`).onclick = async () => {
+						let grid = element.querySelector(`[data-id="${this.escape(id)}"] > .component-locations-container > .grid`);
 						if(parseInt(grid.getAttribute("data-orientation")) == 0) {
 							grid.style.transform = "scaleX(-1) scaleY(-1)";
+							fieldOrientation = 1;
 							grid.setAttribute("data-orientation", 1);
 						} else {
 							grid.style.transform = "";
+							fieldOrientation = 0;
 							grid.setAttribute("data-orientation", 0);
 						}
 					}
-					let gridElements = document.querySelectorAll(`[data-id="${this.escape(id)}"] > .component-locations-container > .grid > div`);
+					let gridElements = element.querySelectorAll(`[data-id="${this.escape(id)}"] > .component-locations-container > .grid > div`);
 					for(let i = 0; i < gridElements.length; i++) {
 						gridElements[i].onclick = async (e) => {
 							let result = await this.showLocationPopup(e.target.getAttribute("data-index"), options, data[component.data] ?? defaultValue);
@@ -539,7 +550,8 @@ const ScoutingAppSDK = function(element, config) {
 				resolve(`
 					<div class="component-locations" data-id="${this.escape(id)}">
 						<div class="component-locations-container">
-							<div class="grid" data-orientation="0" style="grid-template-rows: repeat(${this.escape(rows)}, 1fr); grid-template-columns: repeat(${this.escape(columns)}, 1fr); background-image: url(${this.escape(src)})">
+							<div class="grid" data-orientation="${this.escape(fieldOrientation)}" style="grid-template-rows: repeat(${this.escape(rows)}, 1fr); grid-template-columns: repeat(${this.escape(columns)}, 1fr); background-image: url(${this.escape(src)});${
+							fieldOrientation == 1 ? " transform: scaleX(-1) scaleY(-1);" : ""}">
 								${[...(new Array(rows)).keys()].map((row, rowindex) => {
 									return [...(new Array(columns)).keys()].map((column, columnindex) => {
 										return `<div style="grid-area: ${rowindex + 1} / ${columnindex + 1} / ${rowindex + 2} / ${columnindex + 2};" data-row="${rowindex}" data-column="${columnindex}" data-index="${(rowindex * columns) + columnindex}"></div>`
@@ -561,8 +573,8 @@ const ScoutingAppSDK = function(element, config) {
 					label = component.label.toString();
 				}
 				pendingFunctions.push(async () => {
-					document.querySelector(`[data-id="${this.escape(id)}"]`).onclick = async () => {
-						await this.showMatchPage(document.querySelector(`[data-id="${this.escape(id)}"]`).getAttribute("data-page"), eventCode, matchNumber, teamNumber);
+					element.querySelector(`[data-id="${this.escape(id)}"]`).onclick = async () => {
+						await this.showMatchPage(element.querySelector(`[data-id="${this.escape(id)}"]`).getAttribute("data-page"), eventCode, matchNumber, teamNumber);
 					};
 				});
 				resolve(`<button class="component-pagebutton" data-id="${this.escape(id)}" data-page="${page}">${label}</button>`);
@@ -577,10 +589,10 @@ const ScoutingAppSDK = function(element, config) {
 					defaultValue = component.default;
 				}
 				pendingFunctions.push(async () => {
-					document.querySelector(`[data-id="${this.escape(id)}"] > input`).oninput = async () => {
-						await this.setData(component.data, document.querySelector(`[data-id="${this.escape(id)}"] > input`).checked);
+					element.querySelector(`[data-id="${this.escape(id)}"] > input`).oninput = async () => {
+						await this.setData(component.data, element.querySelector(`[data-id="${this.escape(id)}"] > input`).checked);
 					};
-					await this.setData(component.data, document.querySelector(`[data-id="${this.escape(id)}"] > input`).checked);
+					await this.setData(component.data, element.querySelector(`[data-id="${this.escape(id)}"] > input`).checked);
 				});
 				resolve(`
 					<div class="component-checkbox" data-id="${this.escape(id)}">
@@ -617,7 +629,7 @@ const ScoutingAppSDK = function(element, config) {
 				}
 				timers[name].id = id;
 				pendingFunctions.push(async () => {
-					document.querySelector(`[data-id="${this.escape(id)}"] > .button-container > button.minus`).onclick = async () => {
+					element.querySelector(`[data-id="${this.escape(id)}"] > .button-container > button.minus`).onclick = async () => {
 						if(timers[name].milliseconds > 1000) {
 							timers[name].milliseconds -= 1000;
 						} else {
@@ -627,20 +639,20 @@ const ScoutingAppSDK = function(element, config) {
 							timers[name].milliseconds = 0;
 						}
 						await this.setData(component.data, timers[name].milliseconds);
-						document.querySelector(`[data-id="${this.escape(timers[name].id)}"] > h2 > span`).innerHTML = this.timerFormat(data[component.data]);
+						element.querySelector(`[data-id="${this.escape(timers[name].id)}"] > h2 > span`).innerHTML = this.timerFormat(data[component.data]);
 					}
-					document.querySelector(`[data-id="${this.escape(id)}"] > .button-container > button.plus`).onclick = async () => {
+					element.querySelector(`[data-id="${this.escape(id)}"] > .button-container > button.plus`).onclick = async () => {
 						timers[name].milliseconds += 1000;
 						await this.setData(component.data, timers[name].milliseconds);
-						document.querySelector(`[data-id="${this.escape(timers[name].id)}"] > h2 > span`).innerHTML = this.timerFormat(data[component.data]);
+						element.querySelector(`[data-id="${this.escape(timers[name].id)}"] > h2 > span`).innerHTML = this.timerFormat(data[component.data]);
 					}
-					document.querySelector(`[data-id="${this.escape(id)}"] > .button-container > button.timer`).onclick = async () => {
+					element.querySelector(`[data-id="${this.escape(id)}"] > .button-container > button.timer`).onclick = async () => {
 						if(timers[name].running) {
 							timers[name].running = false;
 							clearInterval(timers[name].interval);
 							await this.setData(component.data, timers[name].milliseconds);
-							document.querySelector(`[data-id="${this.escape(timers[name].id)}"] > h2 > span`).innerHTML = this.timerFormat(data[component.data]);
-							document.querySelector(`[data-id="${this.escape(timers[name].id)}"] > .button-container > button.timer`).innerHTML = "Start";
+							element.querySelector(`[data-id="${this.escape(timers[name].id)}"] > h2 > span`).innerHTML = this.timerFormat(data[component.data]);
+							element.querySelector(`[data-id="${this.escape(timers[name].id)}"] > .button-container > button.timer`).innerHTML = "Start";
 							for(let i = 0; i < restricts.length; i++) {
 								if(timers[restricts[i]] == null) {
 									timers[restricts[i]] = {};
@@ -648,7 +660,7 @@ const ScoutingAppSDK = function(element, config) {
 									timers[restricts[i]].restricted = false;
 								}
 								timers[restricts[i]].restricted = false;
-								let button = document.querySelector(`[data-id="${this.escape(timers[restricts[i]].id)}"] > .button-container > button.timer`);
+								let button = element.querySelector(`[data-id="${this.escape(timers[restricts[i]].id)}"] > .button-container > button.timer`);
 								if(timers[restricts[i]].id != null && button != null) {
 									button.disabled = false;
 								}
@@ -660,8 +672,8 @@ const ScoutingAppSDK = function(element, config) {
 									timers[restricts[i]].running = false;
 									timers[restricts[i]].restricted = false;
 								}
-								if(timers[restricts[i]].id != null && document.querySelector(`[data-id="${this.escape(timers[restricts[i]].id)}"] > .button-container > button.timer`) != null) {
-									document.querySelector(`[data-id="${this.escape(timers[restricts[i]].id)}"] > .button-container > button.timer`).disabled = true;
+								if(timers[restricts[i]].id != null && element.querySelector(`[data-id="${this.escape(timers[restricts[i]].id)}"] > .button-container > button.timer`) != null) {
+									element.querySelector(`[data-id="${this.escape(timers[restricts[i]].id)}"] > .button-container > button.timer`).disabled = true;
 								}
 								timers[restricts[i]].restricted = true;
 							}
@@ -669,12 +681,12 @@ const ScoutingAppSDK = function(element, config) {
 							timers[name].interval = setInterval(async () => {
 								timers[name].milliseconds += 50;
 								await this.setData(component.data, timers[name].milliseconds);
-								let text = document.querySelector(`[data-id="${this.escape(timers[name].id)}"] > h2 > span`);
+								let text = element.querySelector(`[data-id="${this.escape(timers[name].id)}"] > h2 > span`);
 								if(text != null) {
 									text.innerHTML = this.timerFormat(data[component.data]);
 								}
 							}, 50);
-							document.querySelector(`[data-id="${this.escape(timers[name].id)}"] > .button-container > button.timer`).innerHTML = "Stop";
+							element.querySelector(`[data-id="${this.escape(timers[name].id)}"] > .button-container > button.timer`).innerHTML = "Stop";
 						}
 					};
 					await this.setData(component.data, timers[name].milliseconds);
@@ -704,10 +716,10 @@ const ScoutingAppSDK = function(element, config) {
 					options = component.options;
 				}
 				pendingFunctions.push(async () => {
-					document.querySelector(`[data-id="${this.escape(id)}"] > select`).oninput = async () => {
-						await this.setData(component.data, document.querySelector(`[data-id="${this.escape(id)}"] > select`).value);
+					element.querySelector(`[data-id="${this.escape(id)}"] > select`).oninput = async () => {
+						await this.setData(component.data, element.querySelector(`[data-id="${this.escape(id)}"] > select`).value);
 					};
-					await this.setData(component.data, document.querySelector(`[data-id="${this.escape(id)}"] > select`).value);
+					await this.setData(component.data, element.querySelector(`[data-id="${this.escape(id)}"] > select`).value);
 				});
 				resolve(`
 					<div class="component-select" data-id="${this.escape(id)}">
@@ -730,10 +742,10 @@ const ScoutingAppSDK = function(element, config) {
 					defaultValue = component.default.toString();
 				}
 				pendingFunctions.push(async () => {
-					document.querySelector(`[data-id="${this.escape(id)}"]`).oninput = async () => {
-						await this.setData(component.data, document.querySelector(`[data-id="${this.escape(id)}"]`).value);
+					element.querySelector(`[data-id="${this.escape(id)}"]`).oninput = async () => {
+						await this.setData(component.data, element.querySelector(`[data-id="${this.escape(id)}"]`).value);
 					};
-					await this.setData(component.data, document.querySelector(`[data-id="${this.escape(id)}"]`).value);
+					await this.setData(component.data, element.querySelector(`[data-id="${this.escape(id)}"]`).value);
 				});
 				resolve(`<textarea class="component-textbox" placeholder="${this.escape(placeholder)}" data-id="${this.escape(id)}">${this.escape(data[component.data] ?? defaultValue)}</textarea>`);
 			} else if(component.type == "upload") {
@@ -751,8 +763,8 @@ const ScoutingAppSDK = function(element, config) {
 					interval = component.interval;
 				}
 				pendingFunctions.push(async () => {
-					await this.prepareQRCodes(formatted, document.querySelector(`[data-id="${this.escape(id)}"]`), chunkLength);
-					await this.showQRCodes(document.querySelector(`[data-id="${this.escape(id)}"]`), interval);
+					await this.prepareQRCodes(formatted, element.querySelector(`[data-id="${this.escape(id)}"]`), chunkLength);
+					await this.showQRCodes(element.querySelector(`[data-id="${this.escape(id)}"]`), interval);
 				});
 				resolve(`<div class="component-qrcode" data-id="${this.escape(id)}" style="display: none;"></div>`);
 			} else if(component.type == "data") {
@@ -801,6 +813,27 @@ const ScoutingAppSDK = function(element, config) {
 		document.documentElement.style.setProperty('--primaryBackgroundColor', configuration.theme.primaryBackgroundColor);
 		document.documentElement.style.setProperty('--primaryContentColor', configuration.theme.primaryContentColor);
 		document.documentElement.style.setProperty('--primaryDarkerBackgroundColor', configuration.theme.primaryDarkerBackgroundColor);
+		if(configuration.pages == null) {
+			configuration.pages = [];
+		}
+		if(configuration.event == null) {
+			configuration.event = {};
+		}
+		if(configuration.event.code == null) {
+			configuration.event.code = "";
+		}
+		if(configuration.event.editable == null) {
+			configuration.event.editable = true;
+		}
+		if(configuration.upload == null) {
+			configuration.upload = {};
+		}
+		if(configuration.upload.passwordHash == null) {
+			configuration.upload.passwordHash = "";
+		}
+		if(configuration.upload.endpoint == null) {
+			configuration.upload.endpoint = "";
+		}
 		return configuration;
 	}
 
@@ -849,5 +882,31 @@ const ScoutingAppSDK = function(element, config) {
 				code = 0;
 			}
 		}, interval);
+	}
+
+	/* Imported from https://github.com/TogaTech/helpful.js  */
+	this.hexFromBytes = (bytes) => {
+		if(bytes == null || !(bytes instanceof Uint8Array)) {
+			return "";
+		}
+		let hex = "";
+		for(let i = 0; i < bytes.length; i++) {
+			if(bytes[i].toString(16).length == 0) {
+				hex += "00";
+			} else if(bytes[i].toString(16).length == 1) {
+				hex += "0" + bytes[i].toString(16);
+			} else {
+				hex += bytes[i].toString(16);
+			}
+		}
+		return hex;
+	}
+
+	this.stringToBytes = (string) => {
+		return (new TextEncoder()).encode(string);
+	}
+
+	this.hash = (string) => {
+		return this.hexFromBytes(sha256(this.stringToBytes(string)));
 	}
 }
