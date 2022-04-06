@@ -4,458 +4,328 @@ function onDeviceReady() {
 	console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
 
 	const data = {
-		game2020: [
+		game2022: [
 			{
-				type: "columns",
+				type: "layout",
+				direction: "rows",
 				components: [
-					[
-						{
-							type: "image",
-							src: "/img/BluePowerPort.png"
-						}
-					],
-					[
-						{
-							type: "image",
-							src: "/img/PowerCell.png",
-							align: "left"
-						},
-						{
-							type: "label",
-							content: "UPPER"
-						},
-						{
-							type: "counter",
-							default: 0,
-							min: 0,
-							step: 1,
-							data: 0
-						},
-						{
-							type: "label",
-							content: "LOWER"
-						},
-						{
-							type: "counter",
-							default: 0,
-							min: 0,
-							step: 1,
-							data: 1
-						},
-						{
-							type: "label",
-							content: "DROPS"
-						},
-						{
-							type: "counter",
-							default: 0,
-							min: 0,
-							step: 1,
-							data: 2
-						}
-					],
-					[
-						{
-							type: "image",
-							src: "/img/ControlPanel.png",
-							align: "left"
-						},
-						{
-							type: "checkbox",
-							label: "INIT. LINE",
-							default: 0,
-							data: 3
-						},
-						{
-							type: "checkbox",
-							label: "ROT. CONTROL",
-							default: 0,
-							data: 4
-						},
-						{
-							type: "checkbox",
-							label: "POS. CONTROL",
-							default: 0,
-							data: 5
-						},
-						{
-							type: "rows",
-							components: [
-								[
-									{
-										type: "columns",
-										components: [
-											[
-												{
-													type: "label",
-													content: "Defense"
-												},
-												{
-													type: "timer",
-													default: [0, 0],
-													data: 6
-												}
-											]
-										]
-									},
-									{
-										type: "columns",
-										components: [
-											[
-												{
-													type: "label",
-													content: "Bricked"
-												},
-												{
-													type: "timer",
-													default: [0, 0],
-													data: 7
-												}
-											]
-										]
-									}
-								]
-							]
-						}
-					],
-					[
-						{
-							type: "button",
-							label: "< Back",
-							page: -1
-						},
-						{
-							type: "button",
-							label: "Teleop >",
-							position: "bottom",
-							page: 1
-						}
-					]
-				],
-			},
-			{
-				type: "columns",
-				components: [
-					[
-						{
-							type: "image",
-							src: "/img/BluePowerPort.png"
-						}
-					],
-					[
-						{
-							type: "image",
-							src: "/img/PowerCell.png",
-							align: "left"
-						},
-						{
-							type: "label",
-							content: "UPPER"
-						},
-						{
-							type: "counter",
-							default: 0,
-							min: 0,
-							step: 1,
-							data: 8
-						},
-						{
-							type: "label",
-							content: "LOWER"
-						},
-						{
-							type: "counter",
-							default: 0,
-							min: 0,
-							step: 1,
-							data: 9
-						},
-						{
-							type: "label",
-							content: "DROPS"
-						},
-						{
-							type: "counter",
-							default: 0,
-							min: 0,
-							step: 1,
-							data: 10
-						}
-					],
-					[
-						{
-							type: "image",
-							src: "/img/ControlPanel.png",
-							align: "left"
-						},
-						{
-							type: "checkbox",
-							label: "INIT. LINE",
-							default: 0,
-							data: 11
-						},
-						{
-							type: "checkbox",
-							label: "ROT. CONTROL",
-							default: 0,
-							data: 12
-						},
-						{
-							type: "checkbox",
-							label: "POS. CONTROL",
-							default: 0,
-							data: 13
-						},
-						{
-							type: "rows",
-							components: [
-								[
-									{
-										type: "columns",
-										components: [
-											[
-												{
-													type: "label",
-													content: "Defense"
-												},
-												{
-													type: "timer",
-													default: [0, 0],
-													data: 14
-												}
-											]
-										]
-									},
-									{
-										type: "columns",
-										components: [
-											[
-												{
-													type: "label",
-													content: "Bricked"
-												},
-												{
-													type: "timer",
-													default: [0, 0],
-													data: 15
-												}
-											]
-										]
-									}
-								]
-							]
-						}
-					],
-					[
-						{
-							type: "button",
-							label: "< Back",
-							page: 0
-						},
-						{
-							type: "button",
-							label: "Endgame >",
-							position: "bottom",
-							page: 2
-						}
-					]
-				],
-			},
-			{
-				label: "Endgame",
-				type: "columns",
-				components: [
-					[
-						{
-							type: "image",
-							src: "/img/BlueShieldGenerator.png"
-						},
-						{
-							type: "slider",
-							min: 0,
-							max: 4,
-							step: 1,
-							data: 16
-						}
-					],
-					[
-						{
-							type: "button",
-							label: "< Back",
-							page: 1
-						},
-						{
-							type: "select",
-							max: 1,
-							min: 1,
-							display: "column",
-							checkboxes: [
-								{
-									label: "None",
-									default: 1
-								},
-								{
-									label: "Park",
-									default: 0
-								},
-								{
-									label: "Climb",
-									default: 0
-								}
-							],
-							data: 17
-						},
-						{
-							type: "button",
-							label: "Comments >",
-							position: "bottom",
-							page: 3
-						}
-					]
-				],
-			},
-			{
-				label: "Comments",
-				type: "rows",
-				components: [
-					[
-						{
-							type: "subheader",
-							content: "Offense"
-						}
-					],
-					[
-						{
-							type: "textbox",
-							placeholder: "Describe the robot's ability to score power cells, spin the spinner, and climb",
-							default: "",
-							data: 18
-						}
-					],
-					
-					[
-						{
-							type: "subheader",
-							content: "General"
-						}
-					],
-					[
-						{
-							type: "textbox",
-							placeholder: "Include specifics about the robot's design, driver, or other miscellaneous comments",
-							default: "",
-							data: 19
-						}
-					],
-					[
-						{
-							type: "checkbox",
-							label: "Ctrl Panel Quick",
-							default: 0,
-							data: 20
-						},
-						{
-							type: "checkbox",
-							label: "Robust Climb",
-							default: 0,
-							data: 21
-						},
-						{
-							type: "checkbox",
-							label: "Good Driver",
-							default: 0,
-							data: 22
-						}
-					],
-					[
-						{
-							type: "checkbox",
-							label: "Ctrl Panel First Try",
-							default: 0,
-							data: 23
-						},
-						{
-							type: "checkbox",
-							label: "Effective Defense",
-							default: 0,
-							data: 24
-						},
-						{
-							type: "checkbox",
-							label: "Stable Robot",
-							default: 0,
-							data: 25
-						}
-					],
-					[
-						{
-							type: "button",
-							label: "< Back",
-							page: 2
-						},
-						{
-							type: "button",
-							label: "Send (Online) >",
-							page: 4
-						},
-						{
-							type: "button",
-							label: "QR (Offline) >",
-							page: 5
-						}
-					]
+					{
+						type: "title",
+						label: "AUTO"
+					},
+					{
+						type: "checkbox",
+						label: "Initiation Line",
+						default: false,
+						data: "initiation_line"
+					},
+					{
+						type: "checkbox",
+						label: "Human Player",
+						default: false,
+						data: "human_player"
+					},
+					{
+						type: "timer",
+						label: "Brick Time",
+						default: 0,
+						data: "brick_time",
+						name: "brick_time",
+						restricts: ["climb_time", "defense_time"]
+					},
+					{
+						type: "locations",
+						src: "/img/2022field.png",
+						default: [],
+						data: "auto_locations",
+						rows: 4,
+						columns: 5,
+						options: [
+							{
+								label: "Upper",
+								value: "u"
+							},
+							{
+								label: "Lower",
+								value: "l"
+							},
+							{
+								label: "Missed",
+								value: "m"
+							}
+						],
+					},
+					{
+						type: "layout",
+						direction: "columns",
+						components: [
+							{
+								type: "pagebutton",
+								label: "< Back",
+								page: -1
+							},
+							{
+								type: "pagebutton",
+								label: "Teleop >",
+								page: 1
+							}
+						]
+					}
 				]
 			},
 			{
-				type: "columns",
+				type: "layout",
+				direction: "rows",
 				components: [
-					[
-						{
-							type: "button",
-							label: "< Back",
-							position: "bottom",
-							page: 3
-						}
-					],
-					[
-						{
-							type: "send"
-						}
-					],
-					[
-						{
-							type: "button",
-							label: "Done >",
-							position: "bottom",
-							page: -1
-						}
-					]
+					{
+						type: "title",
+						label: "TELEOP"
+					},
+					{
+						type: "timer",
+						label: "Defense Time",
+						default: 0,
+						data: "defense_time",
+						name: "defense_time",
+						restricts: ["climb_time", "brick_time"]
+					},
+					{
+						type: "timer",
+						label: "Brick Time",
+						default: 0,
+						data: "brick_time",
+						name: "brick_time",
+						restricts: ["climb_time", "defense_time"]
+					},
+					{
+						type: "locations",
+						src: "/img/2022field.png",
+						default: [],
+						data: "teleop_locations",
+						rows: 4,
+						columns: 5,
+						options: [
+							{
+								label: "Upper",
+								value: "u"
+							},
+							{
+								label: "Lower",
+								value: "l"
+							},
+							{
+								label: "Missed",
+								value: "m"
+							}
+						],
+						count: "teleop_count"
+					},
+					{
+						type: "layout",
+						direction: "columns",
+						components: [
+							{
+								type: "pagebutton",
+								label: "< Auto",
+								page: 0
+							},
+							{
+								type: "pagebutton",
+								label: "Endgame >",
+								page: 2
+							}
+						]
+					}
 				]
 			},
 			{
-				type: "columns",
+				type: "layout",
+				direction: "rows",
 				components: [
-					[
-						{
-							type: "button",
-							label: "< Back",
-							position: "bottom",
-							page: 3
-						}
-					],
-					[
-						{
-							type: "qrcode"
-						}
-					],
-					[
-						{
-							type: "button",
-							label: "Done >",
-							position: "bottom",
-							page: -1
-						}
-					]
+					{
+						type: "title",
+						label: "ENDGAME"
+					},
+					{
+						type: "timer",
+						label: "Climb Time",
+						default: 0,
+						data: "climb_time",
+						name: "climb_time",
+						restricts: ["defense_time", "brick_time"]
+					},
+					{
+						type: "select",
+						label: "Climb",
+						data: "climb",
+						default: 0,
+						options: [
+							{
+								label: "None"
+							},
+							{
+								label: "Low"
+							},
+							{
+								label: "Mid"
+							},
+							{
+								label: "High"
+							},
+							{
+								label: "Traversal"
+							}
+						]
+					},
+					{
+						type: "layout",
+						direction: "columns",
+						components: [
+							{
+								type: "pagebutton",
+								label: "< Teleop",
+								page: 1
+							},
+							{
+								type: "pagebutton",
+								label: "Notes >",
+								page: 3
+							}
+						]
+					}
+				]
+			},
+			{
+				type: "layout",
+				direction: "rows",
+				components: [
+					{
+						type: "title",
+						label: "NOTES"
+					},
+					{
+						type: "textbox",
+						placeholder: "Enter notes here...",
+						default: "",
+						data: "notes"
+					},
+					{
+						type: "layout",
+						direction: "columns",
+						components: [
+							{
+								type: "pagebutton",
+								label: "< Endgame",
+								page: 2
+							},
+							{
+								type: "pagebutton",
+								label: "Send >",
+								page: 4
+							}
+						]
+					}
+				]
+			},
+			{
+				type: "layout",
+				direction: "rows",
+				components: [
+					{
+						type: "pagebutton",
+						label: "Upload (Online)",
+						page: 5
+					},
+					{
+						type: "pagebutton",
+						label: "QR Code (Offline)",
+						page: 6
+					},
+					{
+						type: "pagebutton",
+						label: "Copy Data (Offline)",
+						page: 7
+					},
+					{
+						type: "pagebutton",
+						label: "< Notes",
+						page: 3
+					},
+				]
+			},
+			{
+				type: "layout",
+				direction: "rows",
+				components: [
+					{
+						type: "upload"
+					},
+					{
+						type: "layout",
+						direction: "columns",
+						components: [
+							{
+								type: "pagebutton",
+								label: "< Send",
+								page: 4
+							},
+							{
+								type: "pagebutton",
+								label: "Home",
+								page: -2
+							}
+						]
+					}
+				]
+			},
+			{
+				type: "layout",
+				direction: "rows",
+				components: [
+					{
+						type: "qrcode"
+					},
+					{
+						type: "layout",
+						direction: "columns",
+						components: [
+							{
+								type: "pagebutton",
+								label: "< Send",
+								page: 4
+							},
+							{
+								type: "pagebutton",
+								label: "Home",
+								page: -2
+							}
+						]
+					}
+				]
+			},
+			{
+				type: "layout",
+				direction: "rows",
+				components: [
+					{
+						type: "data"
+					},
+					{
+						type: "layout",
+						direction: "columns",
+						components: [
+							{
+								type: "pagebutton",
+								label: "< Send",
+								page: 4
+							},
+							{
+								type: "pagebutton",
+								label: "Home",
+								page: -2
+							}
+						]
+					}
 				]
 			}
 		]
@@ -463,11 +333,16 @@ function onDeviceReady() {
 
 	const sdk = new ScoutingAppSDK(document.querySelector("#app"), {
 		theme: {
-			backgroundColor: "#a0c1d8",
-			alternateBackgroundColor: "#e5eef4",
-			contentColor: "#404040"
+			backgroundColor: "#e5eef4",
+			contentColor: "#404040",
+			primaryBackgroundColor: "#39547b",
+			primaryContentColor: "#e5eef4",
+			primaryDarkerBackgroundColor: "#2b405f"
 		},
-		pages: data.game2020
+		pages: data.game2022,
+		format: (data) => {
+			return "";
+		}
 	});
 
 	sdk.showLoginPage();
