@@ -291,7 +291,9 @@ function onDeviceReady() {
 						label: "QR CODE"
 					},
 					{
-						type: "qrcode"
+						type: "qrcode",
+						chunkLength: 30,
+						interval: 500
 					},
 					{
 						type: "layout",

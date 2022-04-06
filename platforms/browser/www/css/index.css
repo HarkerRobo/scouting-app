@@ -646,3 +646,7 @@ body {
 	outline: 0;
 	background-color: var(--primaryDarkerBackgroundColor);
 }
+
+.component-qrcode > canvas {
+	width: 100%;
+}

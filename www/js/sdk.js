@@ -740,8 +740,21 @@ const ScoutingAppSDK = function(element, config) {
 				let formatted = await this.formatData(eventCode, matchNumber, teamNumber, data);
 				resolve(``);
 			} else if(component.type == "qrcode") {
+				let id = this.random();
 				let formatted = await this.formatData(eventCode, matchNumber, teamNumber, data);
-				resolve(``);
+				let chunkLength = 20;
+				if(typeof component.chunkLength == "number") {
+					chunkLength = component.chunkLength;
+				}
+				let interval = 500;
+				if(typeof component.interval == "number") {
+					interval = component.interval;
+				}
+				pendingFunctions.push(async () => {
+					await this.prepareQRCodes(formatted, document.querySelector(`[data-id="${this.escape(id)}"]`), chunkLength);
+					await this.showQRCodes(document.querySelector(`[data-id="${this.escape(id)}"]`), interval);
+				});
+				resolve(`<div class="component-qrcode" data-id="${this.escape(id)}" style="display: none;"></div>`);
 			} else if(component.type == "data") {
 				let formatted = await this.formatData(eventCode, matchNumber, teamNumber, data);
 				resolve(`<textarea class="component-textbox" readonly>${this.escape(formatted)}</textarea>`);
@@ -791,38 +804,50 @@ const ScoutingAppSDK = function(element, config) {
 		return configuration;
 	}
 
-	this.getQRCodes = (string) => {
-		return new Promise(async (resolve, reject) => {
-			let pause = (ms) => {
-				return new Promise(async (resolve, reject) => {
-					setTimeout(() => {
-						resolve();
-					}, ms);
-				});
-			}
+	function generateQR(string, target) {
+		let options = {
+			text: string,
+			width: getQRSize(),
+			height: getQRSize(),
+			colorDark : config.theme.backgroundColor,
+			colorLight : config.theme.primaryDarkerBackgroundColor,
+			correctLevel : QRCode.CorrectLevel.H
+		}
 
-			let codes = [];
-			let strings = [];
-			while(string.length > MAX_QR_LENGTH) {
-				strings.push(string.substring(0, MAX_QR_LENGTH));
-				string = string.substring(MAX_QR_LENGTH);
-			}
-			strings.push(string);
-			for(let i = 0; i < strings.length; i++) {
-				let code = document.createElement("div");
-				let data = JSON.stringify({
-					content: strings[i],
-					total: strings.length,
-					index: i
-				})
-				new QRCode(code, data);
-				while(code.querySelectorAll("img")[0].src == "") {
-					await pause(1);
-				}
-				codes.push(code.querySelectorAll("img")[0].src);
-			}
-			resolve(codes);
-		});
+		var qrcode = new QRCode(target, options);
 	}
 
+	function getQRSize() {
+		return Math.min(window.innerWidth * 0.9, window.innerHeight * 0.7);
+	}
+
+	this.prepareQRCodes = (string, target, chunkLength) => {
+		let chunks = [];
+		for(let i = 0; i < string.length; i += chunkLength) {
+			chunks.push(string.substring(i, i + chunkLength));
+		}
+		for(let i = 0; i < chunks.length; i++) {
+			generateQR(JSON.stringify([i, chunks.length, chunks[i]]), target);
+		}
+		console.log(chunks);
+	}
+
+	this.showQRCodes = (target, interval) => {
+		let codes = target.querySelectorAll("canvas");
+		for(let i = 0; i < codes.length; i++) {
+			codes[i].style.display = "none";
+		}
+		let code = 0;
+		target.style.display = "block";
+		setInterval(() => {
+			for(let i = 0; i < codes.length; i++) {
+				codes[i].style.display = "none";
+			}
+			codes[code].style.display = "block";
+			code++;
+			if(code >= codes.length) {
+				code = 0;
+			}
+		}, interval);
+	}
 }
