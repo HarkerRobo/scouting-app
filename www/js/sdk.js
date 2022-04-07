@@ -759,11 +759,11 @@ const ScoutingAppSDK = function(element, config) {
 							headers: {
 								'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
 							},
-							body: `key=${encodeURIComponent(await getKey())}&contents=${encodeURIComponent(formatted)}&hash=${encodeURIComponent(await this.hash(formatted))}`
+							body: `key=${encodeURIComponent(await getKey())}&contents=${encodeURIComponent(formatted)}&eventcode=${encodeURIComponent(eventCode)}&hash=${encodeURIComponent(await this.hash(eventCode + "::" + formatted))}`
 						})).json();
 						if(upload.success) {
 							element.querySelector(`[data-id="${this.escape(id)}"]`).innerHTML += `<h3>Verifying...</h3>`;
-							let verify = await (await fetch(`${config.upload.endpoint}/verify?key=${encodeURIComponent(await getKey())}&hash=${encodeURIComponent(await this.hash(formatted))}`)).json();
+							let verify = await (await fetch(`${config.upload.endpoint}/verify?key=${encodeURIComponent(await getKey())}&hash=${encodeURIComponent(await this.hash(eventCode + "::" + formatted))}`)).json();
 							if(verify.success) {
 								element.querySelector(`[data-id="${this.escape(id)}"]`).innerHTML += `<h3 class="primary">Success!</h3>`;
 							} else {
@@ -773,7 +773,7 @@ const ScoutingAppSDK = function(element, config) {
 							element.querySelector(`[data-id="${this.escape(id)}"]`).innerHTML += `<h3 class="red">Upload Failed!<br>${upload.error || "Unknown error."}</h3>`;
 						}
 					} catch(err) {
-						console.error(err);
+						// console.error(err);
 						element.querySelector(`[data-id="${this.escape(id)}"]`).innerHTML += `<h3 class="red">Upload Failed!<br>Could not connect to the server.</h3>`;
 					}
 				});
