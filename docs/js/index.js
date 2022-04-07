@@ -35,7 +35,7 @@ function onDeviceReady() {
 					},
 					{
 						type: "locations",
-						src: "/img/2022field.png",
+						src: "./img/2022field.png",
 						default: [],
 						data: "auto_locations",
 						rows: 4,
@@ -99,7 +99,7 @@ function onDeviceReady() {
 					},
 					{
 						type: "locations",
-						src: "/img/2022field.png",
+						src: "./img/2022field.png",
 						default: [],
 						data: "teleop_locations",
 						rows: 4,
