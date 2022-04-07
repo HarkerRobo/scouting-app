@@ -749,8 +749,35 @@ const ScoutingAppSDK = function(element, config) {
 				});
 				resolve(`<textarea class="component-textbox" placeholder="${this.escape(placeholder)}" data-id="${this.escape(id)}">${this.escape(data[component.data] ?? defaultValue)}</textarea>`);
 			} else if(component.type == "upload") {
-				let formatted = await this.formatData(eventCode, matchNumber, teamNumber, data);
-				resolve(``);
+				let id = this.random();
+				pendingFunctions.push(async () => {
+					try {
+						let formatted = await this.formatData(eventCode, matchNumber, teamNumber, data);
+						element.querySelector(`[data-id="${this.escape(id)}"]`).innerHTML += `<h3>Uploading...</h3>`;
+						let upload = await (await fetch(`${config.upload.endpoint}/upload`, {
+							method: "POST",
+							headers: {
+								'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+							},
+							body: `key=${encodeURIComponent(await getKey())}&contents=${encodeURIComponent(formatted)}&hash=${encodeURIComponent(await this.hash(formatted))}`
+						})).json();
+						if(upload.success) {
+							element.querySelector(`[data-id="${this.escape(id)}"]`).innerHTML += `<h3>Verifying...</h3>`;
+							let verify = await (await fetch(`${config.upload.endpoint}/verify?key=${encodeURIComponent(await getKey())}&hash=${encodeURIComponent(await this.hash(formatted))}`)).json();
+							if(verify.success) {
+								element.querySelector(`[data-id="${this.escape(id)}"]`).innerHTML += `<h3 class="primary">Success!</h3>`;
+							} else {
+								element.querySelector(`[data-id="${this.escape(id)}"]`).innerHTML += `<h3 class="red">Upload Failed!<br>${verify.error || "Unable to verify upload completion."}</h3>`;
+							}
+						} else {
+							element.querySelector(`[data-id="${this.escape(id)}"]`).innerHTML += `<h3 class="red">Upload Failed!<br>${upload.error || "Unknown error."}</h3>`;
+						}
+					} catch(err) {
+						console.error(err);
+						element.querySelector(`[data-id="${this.escape(id)}"]`).innerHTML += `<h3 class="red">Upload Failed!<br>Could not connect to the server.</h3>`;
+					}
+				});
+				resolve(`<div class="component-upload" data-id="${this.escape(id)}"><h3>Preparing...</h3></div>`);
 			} else if(component.type == "qrcode") {
 				let id = this.random();
 				let formatted = await this.formatData(eventCode, matchNumber, teamNumber, data);

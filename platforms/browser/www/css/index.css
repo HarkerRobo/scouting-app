@@ -650,3 +650,21 @@ body {
 .component-qrcode > canvas {
 	width: 100%;
 }
+
+.component-upload > h3 {
+	text-align: center;
+	color: var(--contentColor);
+	width: calc(100% - 20px);
+	max-width: 350px;
+	overflow-wrap: break-word;
+	margin-left: 50%;
+	transform: translate(-50%, 0);
+}
+
+.component-upload > h3.red {
+	color: #ff0000;
+}
+
+.component-upload > h3.primary {
+	color: var(--primaryBackgroundColor);
+}

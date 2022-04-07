@@ -360,7 +360,7 @@ function onDeviceReady() {
 		},
 		upload: {
 			passwordHash: "0801b3a5af3f6f6387f03be37307856b755a60d9572e9b3131b0a633fdc9ba17",
-			endpoint: "https://harkerrobo.kabirramzan.com/scoutingapp/api/v1/upload"
+			endpoint: "https://harkerrobo.kabirramzan.com/scoutingapp/api/v1"
 		}
 	});
 
