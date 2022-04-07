@@ -670,7 +670,13 @@ const ScoutingAppSDK = function(element, config) {
 										}
 									}
 								}
+								if((data[component.data] ?? []).filter(loc => loc.index == result[0].index).length > 0) {
+									element.querySelector(`[data-id="${this.escape(id)}"] > .component-locations-container > .grid > div[data-index="${this.escape(result[0].index)}"]`).classList.add("active");
+								} else {
+									element.querySelector(`[data-id="${this.escape(id)}"] > .component-locations-container > .grid > div[data-index="${this.escape(result[0].index)}"]`).classList.remove("active");
+								}
 								await this.setData(component.data, locationData);
+								
 							}
 						}
 					}
@@ -682,7 +688,7 @@ const ScoutingAppSDK = function(element, config) {
 							fieldOrientation == 1 ? " transform: scaleX(-1) scaleY(-1);" : ""}">
 								${[...(new Array(rows)).keys()].map((row, rowindex) => {
 									return [...(new Array(columns)).keys()].map((column, columnindex) => {
-										return `<div style="grid-area: ${rowindex + 1} / ${columnindex + 1} / ${rowindex + 2} / ${columnindex + 2};" data-row="${rowindex}" data-column="${columnindex}" data-index="${(rowindex * columns) + columnindex}"></div>`
+										return `<div style="grid-area: ${rowindex + 1} / ${columnindex + 1} / ${rowindex + 2} / ${columnindex + 2};" data-row="${rowindex}" data-column="${columnindex}" data-index="${(rowindex * columns) + columnindex}"${(data[component.data] ?? []).filter(loc => loc.index == (rowindex * columns) + columnindex).length > 0 ? ` class="active"` : ""}></div>`
 									}).join("")
 								}).join("")}
 							</div>

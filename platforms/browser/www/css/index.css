@@ -532,8 +532,7 @@ body {
 	background-color: rgba(0, 0, 0, 0);
 	transition: background-color 0.2s ease-in-out;
 }
-.match-window .component-locations > .component-locations-container > .grid > div:hover,
-.match-window .component-locations > .component-locations-container > .grid > div:focus {
+.match-window .component-locations > .component-locations-container > .grid > div.active {
 	background-color: rgba(0, 0, 0, 0.5);
 }
 
