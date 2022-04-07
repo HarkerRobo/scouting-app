@@ -410,6 +410,4 @@ function onDeviceReady() {
 
 	sdk.showLoginPage();
 	window.scoutingsdk = sdk;
-
-	fetch("./img/2022field.png");
 }
