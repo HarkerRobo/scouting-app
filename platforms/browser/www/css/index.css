@@ -48,10 +48,12 @@
 
 * {
 	font-family: 'Roboto', sans-serif;
+	touch-action: manipulation;
 }
 
 body {
 	background-color: var(--backgroundColor);
+	overflow-x: hidden;
 }
 
 .login-window {
