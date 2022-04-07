@@ -569,12 +569,8 @@ body {
 	height: 100vh;
 	z-index: 100;
 	overflow: hidden;
-	background-color: rgba(0, 0, 0, 0);
-	transition: background-color 0.2s ease-in-out;
-}
-
-.overlay-visible {
 	background-color: rgba(0, 0, 0, 0.8);
+	transition: background-color 0.2s ease-in-out;
 }
 
 .location-popup {
@@ -590,14 +586,8 @@ body {
 	padding-top: 30px;
 	padding-bottom: 10px;
 	border-radius: 10px;
-	transform: translate(-50%, -50%) scale(1.05);
-	opacity: 0;
+	transform: translate(-50%, -50%);
 	transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
-}
-
-.location-popup-visible {
-	transform: translate(-50%, -50%) scale(0.95);
-	opacity: 1;
 }
 
 .location-popup > button {

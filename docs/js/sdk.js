@@ -564,23 +564,15 @@ const ScoutingAppSDK = function(element, config) {
 				<button>Close</button>
 			`;
 			element.querySelector(".location-popup > button").onclick = async () => {
-				element.querySelector(".location-popup").classList.remove("location-popup-visible");
-				element.querySelector(".overlay").classList.remove("overlay-visible");
-				setTimeout(() => {
-					element.querySelector(".location-popup").style.display = "none";
-					element.querySelector(".overlay").style.display = "none";
-				}, 200);
+				element.querySelector(".location-popup").style.display = "none";
+				element.querySelector(".overlay").style.display = "none";
 				resolve();
 			}
 			let elements = element.querySelectorAll(".location-popup > div > button");
 			for(let i = 0; i < elements.length; i++) {
 				elements[i].onclick = async () => {
-					element.querySelector(".location-popup").classList.remove("location-popup-visible");
-					element.querySelector(".overlay").classList.remove("overlay-visible");
-					setTimeout(() => {
-						element.querySelector(".location-popup").style.display = "none";
-						element.querySelector(".overlay").style.display = "none";
-					}, 200);
+					element.querySelector(".location-popup").style.display = "none";
+					element.querySelector(".overlay").style.display = "none";
 					resolve([
 						{
 							value: elements[i].getAttribute("data-value"),
@@ -592,10 +584,6 @@ const ScoutingAppSDK = function(element, config) {
 			}
 			element.querySelector(".overlay").style.display = "block";
 			element.querySelector(".location-popup").style.display = "block";
-			setTimeout(() => {
-				element.querySelector(".overlay").classList.add("overlay-visible");
-				element.querySelector(".location-popup").classList.add("location-popup-visible");
-			}, 0);
 		});
 	}
 
