@@ -225,6 +225,24 @@ body {
 	color: var(--contentColor);
 }
 
+.scanner-window > .upload > h3 {
+	text-align: center;
+	color: var(--contentColor);
+	width: calc(100% - 20px);
+	max-width: 350px;
+	overflow-wrap: break-word;
+	margin-left: 50%;
+	transform: translate(-50%, 0);
+}
+
+.scanner-window > .upload > h3.red {
+	color: #ff0000;
+}
+
+.scanner-window > .upload > h3.primary {
+	color: var(--primaryBackgroundColor);
+}
+
 .button-row {
 	width: max-content;
 	margin-left: 50%;

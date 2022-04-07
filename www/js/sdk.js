@@ -188,7 +188,7 @@ const ScoutingAppSDK = function(element, config) {
 					await this.showLoginPage();
 				}
 				element.querySelector(".button-row > button.scan-data").onclick = async () => {
-					await this.showScannerPage();
+					await this.showScannerPage(await this.getEventCode());
 				}
 				element.querySelector(".home-window > button.start").onclick = async () => {
 					let eventCode = element.querySelector(".home-window > input.event-code").value;
@@ -262,7 +262,7 @@ const ScoutingAppSDK = function(element, config) {
 		return Math.floor(Math.min(window.innerWidth - 200, window.innerHeight - 200));
 	}
 
-	this.showScannerPage = () => {
+	this.showScannerPage = (eventCode) => {
 		return new Promise(async (resolve, reject) => {
 			if(await this.getUser() == "") {
 				await this.showLoginPage();
@@ -277,6 +277,7 @@ const ScoutingAppSDK = function(element, config) {
 						<p>&nbsp;</p>
 						<div class="reader" id="reader"></div>
 						<div class="upload"></div>
+						<button style="display: none;" class="scan-again">Scan Again</button>
 					</div>
 				`;
 				let reader = new Html5Qrcode("reader");
@@ -306,6 +307,14 @@ const ScoutingAppSDK = function(element, config) {
 					}
 					await this.showHomePage();
 				}
+				element.querySelector("button.scan-again").onclick = async () => {
+					try {
+						await reader.stop()
+					} catch(err) {
+						
+					}
+					await this.showScannerPage();
+				}
 				let codes = [];
 				try {
 					let devices = await Html5Qrcode.getCameras();
@@ -329,6 +338,37 @@ const ScoutingAppSDK = function(element, config) {
 										console.log(codes.join(""));
 										element.querySelector(".scanner-window > p").innerHTML = "&nbsp;";
 										await reader.stop();
+
+										try {
+											element.querySelector(".scanner-window > .upload").innerHTML = "<h3>Preparing...</h3>";
+											let formatted = codes.join("");
+											element.querySelector(".scanner-window > .upload").innerHTML += `<h3>Uploading...</h3>`;
+											let upload = await (await fetch(`${config.upload.endpoint}/upload`, {
+												method: "POST",
+												headers: {
+													'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+												},
+												body: `key=${encodeURIComponent(await getKey())}&contents=${encodeURIComponent(formatted)}&eventcode=${encodeURIComponent(eventCode)}&hash=${encodeURIComponent(await this.hash(eventCode + "::" + formatted))}`
+											})).json();
+											if(upload.success) {
+												element.querySelector(".scanner-window > .upload").innerHTML += `<h3>Verifying...</h3>`;
+												let verify = await (await fetch(`${config.upload.endpoint}/verify?key=${encodeURIComponent(await getKey())}&hash=${encodeURIComponent(await this.hash(eventCode + "::" + formatted))}`)).json();
+												if(verify.success) {
+													element.querySelector(".scanner-window > .upload").innerHTML += `<h3 class="primary">Success!</h3>`;
+													element.querySelector(".scanner-window > button").style.display = "block";
+												} else {
+													element.querySelector(".scanner-window > .upload").innerHTML += `<h3 class="red">Upload Failed!<br>${verify.error || "Unable to verify upload completion."}</h3>`;
+													element.querySelector(".scanner-window > button").style.display = "block";
+												}
+											} else {
+												element.querySelector(".scanner-window > .upload").innerHTML += `<h3 class="red">Upload Failed!<br>${upload.error || "Unknown error."}</h3>`;
+												element.querySelector(".scanner-window > button").style.display = "block";
+											}
+										} catch(err) {
+											// console.error(err);
+											element.querySelector(".scanner-window > .upload").innerHTML += `<h3 class="red">Upload Failed!<br>Could not connect to the server.</h3>`;
+											element.querySelector(".scanner-window > button").style.display = "block";
+										}
 									}
 								} catch(err) {
 
