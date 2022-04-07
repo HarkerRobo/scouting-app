@@ -917,6 +917,7 @@ const ScoutingAppSDK = function(element, config) {
 		for(let i = 0; i < codes.length; i++) {
 			codes[i].style.display = "none";
 		}
+		target.appendChild(document.createElement("p"));
 		let code = 0;
 		target.style.display = "block";
 		setInterval(() => {
@@ -924,6 +925,7 @@ const ScoutingAppSDK = function(element, config) {
 				codes[i].style.display = "none";
 			}
 			codes[code].style.display = "block";
+			target.querySelector("p").innerHTML = `${code + 1}/${codes.length}`;
 			code++;
 			if(code >= codes.length) {
 				code = 0;
