@@ -675,7 +675,7 @@ body {
 .component-qrcode > canvas {
 	max-width: 100%;
 	width: auto;
-	height: calc(100vh - 250px);
+	max-height: calc(100vh - 250px);
 	margin-left: 50%;
 	transform: translate(-50%, 0);
 }
