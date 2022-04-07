@@ -149,6 +149,10 @@ const ScoutingAppSDK = function(element, config) {
 				await this.showLoginPage();
 			} else {
 				data = {};
+				if(config.event.editable == false && config.event.code != "") {
+					_eventCode = config.event.code;
+					await this.setEventCode(_eventCode);
+				}
 				element.innerHTML = `
 					<div class="home-window">
 						<div class="button-row">
