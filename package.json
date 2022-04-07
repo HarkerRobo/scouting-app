@@ -12,7 +12,7 @@
 		"run_browser": "cordova run browser --port=7626",
 		"build_ios": "cordova build ios",
 		"run_ios": "cordova emulate ios",
-		"browser": "npm run build_browser && npm run run_browser",
+		"browser": "rm -rf ./docs && mkdir docs && cp -R ./platforms/browser/www/* ./docs && npm run build_browser && npm run run_browser",
 		"ios": "npm run build_ios && npm run run_ios"
 	},
 	"keywords": [
