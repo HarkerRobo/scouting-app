@@ -550,6 +550,7 @@ const ScoutingAppSDK = function(element, config) {
 
 	this.showLocationPopup = (index, options, locationData) => {
 		return new Promise(async (resolve, reject) => {
+			locationData = [...locationData];
 			element.querySelector(".location-popup").innerHTML = `
 				${options.map((option) => {
 					return `
