@@ -196,7 +196,7 @@ body {
 	padding: 8px;
 }
 
-.home-window button {
+.home-window button, .scanner-window button {
 	background-color: var(--primaryBackgroundColor);
 	border: 2px solid var(--primaryBackgroundColor);
 	border-radius: 5px;
@@ -215,9 +215,13 @@ body {
 	transform: translate(-50%, 0);
 }
 
-.home-window > button:active {
+.home-window button:active, .scanner-window button:active {
 	outline: 0;
 	background-color: var(--primaryDarkerBackgroundColor);
+}
+
+.scanner-window > .reader {
+	margin-top: 20px;
 }
 
 .button-row {

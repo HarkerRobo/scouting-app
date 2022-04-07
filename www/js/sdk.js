@@ -236,17 +236,6 @@ const ScoutingAppSDK = function(element, config) {
 		});
 	}
 
-	this.showUploadPage = () => {
-		return new Promise(async (resolve, reject) => {
-			if(await this.getUser() == "") {
-				await this.showLoginPage();
-			} else {
-				element.innerHTML = ``;
-			}
-			resolve();
-		});
-	}
-
 	this.showMatchPage = (index, eventCode, matchNumber, teamNumber) => {
 		return new Promise(async (resolve, reject) => {
 			if(await this.getUser() == "") {
@@ -264,6 +253,63 @@ const ScoutingAppSDK = function(element, config) {
 					<div class="location-popup"></div>
 				`;
 				await this.runPendingFunctions();
+			}
+			resolve();
+		});
+	}
+
+	this.showScannerPage = () => {
+		return new Promise(async (resolve, reject) => {
+			if(await this.getUser() == "") {
+				await this.showLoginPage();
+			} else {
+				element.innerHTML = `
+					<div class="scanner-window">
+						<div class="button-row">
+							<button class="log-out">Log Out</button>
+							<button class="scout">Scout</button>
+							<button class="switch-accounts">Switch Accounts</button>
+						</div>
+						<div id="reader"></div>
+					</div>
+				`;
+				element.querySelector(".button-row > button.log-out").onclick = async () => {
+					await this.logout();
+					await this.showLoginPage();
+				}
+				element.querySelector(".button-row > button.switch-accounts").onclick = async () => {
+					await this.logoutUser();
+					await this.showLoginPage();
+				}
+				element.querySelector(".button-row > button.scout").onclick = async () => {
+					await this.showHomePage();
+				}
+				try {
+					let reader = new Html5Qrcode("reader");
+					let devices = await Html5Qrcode.getCameras();
+					console.log(devices);
+					if(devices.length > 0) {
+						reader.start(
+							devices[0].id,
+							{
+								fps: 10,
+								qrbox: {
+									width: 250,
+									height: 250
+								}
+							},
+							(decodedText, decodedResult) => {
+								console.log(decodedText);
+								console.log(decodedResult);
+							},
+							(errorMessage) => {
+								// console.error(errorMessage);
+							}
+						)
+					}
+				} catch(err) {
+
+				}
 			}
 			resolve();
 		});
@@ -889,8 +935,8 @@ const ScoutingAppSDK = function(element, config) {
 			text: string,
 			width: getQRSize(),
 			height: getQRSize(),
-			colorDark : config.theme.backgroundColor,
-			colorLight : config.theme.primaryDarkerBackgroundColor,
+			colorDark : config.theme.primaryDarkerBackgroundColor,
+			colorLight : config.theme.backgroundColor,
 			correctLevel : QRCode.CorrectLevel.H
 		}
 
