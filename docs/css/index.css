@@ -220,8 +220,9 @@ body {
 	background-color: var(--primaryDarkerBackgroundColor);
 }
 
-.scanner-window > .reader {
-	margin-top: 20px;
+.scanner-window > p {
+	text-align: center;
+	color: var(--contentColor);
 }
 
 .button-row {
@@ -654,7 +655,11 @@ body {
 }
 
 .component-qrcode > canvas {
-	width: 100%;
+	max-width: 100%;
+	width: auto;
+	height: calc(100vh - 250px);
+	margin-left: 50%;
+	transform: translate(-50%, 0);
 }
 
 .component-qrcode > p {

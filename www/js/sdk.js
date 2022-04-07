@@ -258,6 +258,10 @@ const ScoutingAppSDK = function(element, config) {
 		});
 	}
 
+	function getQRScannerSize() {
+		return Math.floor(Math.min(window.innerWidth - 200, window.innerHeight - 200));
+	}
+
 	this.showScannerPage = () => {
 		return new Promise(async (resolve, reject) => {
 			if(await this.getUser() == "") {
@@ -270,22 +274,40 @@ const ScoutingAppSDK = function(element, config) {
 							<button class="scout">Scout</button>
 							<button class="switch-accounts">Switch Accounts</button>
 						</div>
-						<div id="reader"></div>
+						<p>&nbsp;</p>
+						<div class="reader" id="reader"></div>
+						<div class="upload"></div>
 					</div>
 				`;
+				let reader = new Html5Qrcode("reader");
 				element.querySelector(".button-row > button.log-out").onclick = async () => {
+					try {
+						await reader.stop()
+					} catch(err) {
+
+					}
 					await this.logout();
 					await this.showLoginPage();
 				}
 				element.querySelector(".button-row > button.switch-accounts").onclick = async () => {
+					try {
+						await reader.stop()
+					} catch(err) {
+						
+					}
 					await this.logoutUser();
 					await this.showLoginPage();
 				}
 				element.querySelector(".button-row > button.scout").onclick = async () => {
+					try {
+						await reader.stop()
+					} catch(err) {
+						
+					}
 					await this.showHomePage();
 				}
+				let codes = [];
 				try {
-					let reader = new Html5Qrcode("reader");
 					let devices = await Html5Qrcode.getCameras();
 					console.log(devices);
 					if(devices.length > 0) {
@@ -294,15 +316,27 @@ const ScoutingAppSDK = function(element, config) {
 							{
 								fps: 10,
 								qrbox: {
-									width: 250,
-									height: 250
+									width: getQRScannerSize(),
+									height: getQRScannerSize()
 								}
 							},
-							(decodedText, decodedResult) => {
-								console.log(decodedText);
-								console.log(decodedResult);
+							async (decodedText, decodedResult) => {
+								try {
+									let data = JSON.parse(decodedText);
+									codes[data[0]] = data[2];
+									element.querySelector(".scanner-window > p").innerHTML = `${codes.filter(code => code != null).length}/${data[1]}`;
+									if(codes.filter(code => code != null).length == data[1]) {
+										console.log(codes.join(""));
+										element.querySelector(".scanner-window > p").innerHTML = "&nbsp;";
+										await reader.stop();
+									}
+								} catch(err) {
+
+								}
+								// console.log(decodedText);
+								// console.log(decodedResult);
 							},
-							(errorMessage) => {
+							async (errorMessage) => {
 								// console.error(errorMessage);
 							}
 						)
@@ -944,7 +978,7 @@ const ScoutingAppSDK = function(element, config) {
 	}
 
 	function getQRSize() {
-		return Math.min(window.innerWidth * 0.9, window.innerHeight * 0.7);
+		return Math.floor(Math.min(window.innerWidth * 0.9, window.innerHeight * 0.7));
 	}
 
 	this.prepareQRCodes = (string, target, chunkLength) => {
