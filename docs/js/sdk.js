@@ -532,7 +532,7 @@ const ScoutingAppSDK = function(element, config) {
 				resolve(true);
 			}
 			resolve(false);
-			// console.log(data);
+			console.log(data);
 		});
 	}
 
@@ -553,7 +553,7 @@ const ScoutingAppSDK = function(element, config) {
 			element.querySelector(".location-popup").innerHTML = `
 				${options.map((option) => {
 					return `
-						<div>
+						<div data-option="${this.escape(option.value)}">
 							<h2>${option.label}</h2>
 							<button data-increment="-1" data-value="${this.escape(option.value)}"><span>-</span></button>
 							<h3>${locationData.filter(loc => loc.value == option.value && loc.index == index).length} here<br>${locationData.filter(loc => loc.value == option.value).length} total</h3>
@@ -561,25 +561,33 @@ const ScoutingAppSDK = function(element, config) {
 						</div>
 					`;
 				}).join("")}
-				<button>Close</button>
+				<button>Save/Close</button>
 			`;
 			element.querySelector(".location-popup > button").onclick = async () => {
 				element.querySelector(".location-popup").style.display = "none";
 				element.querySelector(".overlay").style.display = "none";
-				resolve();
+				resolve(locationData);
 			}
 			let elements = element.querySelectorAll(".location-popup > div > button");
 			for(let i = 0; i < elements.length; i++) {
 				elements[i].onclick = async () => {
-					element.querySelector(".location-popup").style.display = "none";
-					element.querySelector(".overlay").style.display = "none";
-					resolve([
-						{
-							value: elements[i].getAttribute("data-value"),
-							index: index
-						}, 
-						parseInt(elements[i].getAttribute("data-increment"))
-					]);
+					let increment = parseInt(elements[i].getAttribute("data-increment"));
+					for(let j = 0; j < Math.abs(increment); j++) {
+						if(increment > 0) {
+							locationData.push({
+								value: elements[i].getAttribute("data-value"),
+								index: index
+							});
+						} else {
+							let indexToRemove = locationData.findIndex(loc => loc.value == elements[i].getAttribute("data-value") && loc.index == index);
+							if(indexToRemove > -1) {
+								locationData.splice(indexToRemove, 1);
+							}
+						}
+					}
+					for(let i = 0; i < options.length; i++) {
+						element.querySelector(`.location-popup > div[data-option="${this.escape(options[i].value)}"] > h3`).innerHTML = `${locationData.filter(loc => loc.value == options[i].value && loc.index == index).length} here<br>${locationData.filter(loc => loc.value == options[i].value).length} total`;
+					}
 				}
 			}
 			element.querySelector(".overlay").style.display = "block";
@@ -659,24 +667,14 @@ const ScoutingAppSDK = function(element, config) {
 							let result = await this.showLocationPopup(e.target.getAttribute("data-index"), options, data[component.data] ?? defaultValue);
 							// console.log(result);
 							if(result != null) {
-								let locationData = data[component.data] ?? defaultValue;
-								for(let j = 0; j < Math.abs(result[1]); j++) {
-									if(result[1] > 0) {
-										locationData.push(result[0]);
+								await this.setData(component.data, result);
+								for(let index = 0; index < (rows * columns); index++) {
+									if((data[component.data] ?? []).filter(loc => loc.index == index).length > 0) {
+										element.querySelector(`[data-id="${this.escape(id)}"] > .component-locations-container > .grid > div[data-index="${this.escape(index)}"]`).classList.add("active");
 									} else {
-										let index = locationData.findIndex(loc => loc.value == result[0].value && loc.index == result[0].index);
-										if(index > -1) {
-											locationData.splice(index, 1);
-										}
+										element.querySelector(`[data-id="${this.escape(id)}"] > .component-locations-container > .grid > div[data-index="${this.escape(index)}"]`).classList.remove("active");
 									}
 								}
-								if((data[component.data] ?? []).filter(loc => loc.index == result[0].index).length > 0) {
-									element.querySelector(`[data-id="${this.escape(id)}"] > .component-locations-container > .grid > div[data-index="${this.escape(result[0].index)}"]`).classList.add("active");
-								} else {
-									element.querySelector(`[data-id="${this.escape(id)}"] > .component-locations-container > .grid > div[data-index="${this.escape(result[0].index)}"]`).classList.remove("active");
-								}
-								await this.setData(component.data, locationData);
-								
 							}
 						}
 					}
