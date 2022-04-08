@@ -372,36 +372,28 @@ function onDeviceReady() {
 		let color = await sdk.getTeamColor(eventCode, matchNumber, teamNumber);
 		csv.push(color);
 		csv.push(
-			JSON.stringify(
-				JSON.stringify(
-					data.auto_locations.map((loc) => {
-						return parseInt(loc.index);
-					}).concat(data.teleop_locations.map((loc) => {
-						return parseInt(loc.index);
-					}))
-				)
-			)
+			`[${data.auto_locations.map((loc) => {
+				return parseInt(loc.index);
+			}).concat(data.teleop_locations.map((loc) => {
+				return parseInt(loc.index);
+			})).join("|")}]`
 		);
 		csv.push(
-			JSON.stringify(
-				JSON.stringify(
-					data.auto_locations.map((loc) => {
-						return loc.value;
-					}).concat(data.teleop_locations.map((loc) => {
-						return loc.value;
-					}))
-				)
-			)
+			`[${data.auto_locations.map((loc) => {
+				return `'${loc.value}'`;
+			}).concat(data.teleop_locations.map((loc) => {
+				return `'${loc.value}'`;
+			})).join("|")}]`
 		);
 		csv.push(parseInt(data.climb))
-		csv.push(data.initiation_line ? "True" : "False");
+		csv.push(data.initiation_line ? "TRUE" : "FALSE");
 		csv.push(data.auto_locations.length);
-		csv.push(data.human_player ? "True" : "False");
+		csv.push(data.human_player ? "TRUE" : "FALSE");
 		csv.push(data.climb_time / 1000);
 		csv.push(data.brick_time / 1000);
 		csv.push(data.defense_time / 1000);
-		csv.push(JSON.stringify(await sdk.getUser()));
-		csv.push(JSON.stringify(data.notes));
+		csv.push(sdk.normalize(await sdk.getUser()));
+		csv.push(sdk.normalize(data.notes));
 		console.log(csv);
 		let formatted = csv.join(",");
 		console.log(formatted)
