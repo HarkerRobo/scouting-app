@@ -846,6 +846,14 @@ const ScoutingAppSDK = function(element, config) {
 				}
 				pendingFunctions.push(async () => {
 					element.querySelector(`[data-id="${this.escape(id)}"]`).onclick = async () => {
+						let timerNames = Object.keys(timers);
+						for(let i = 0; i < timerNames.length; i++) {
+							clearInterval(timers[timerNames[i]].interval);
+							timers[timerNames[i]].running = false;
+							timers[timerNames[i]].restricted = false;
+							await this.setData(component.data, timers[timerNames[i]].milliseconds);
+						}
+						
 						await this.showMatchPage(element.querySelector(`[data-id="${this.escape(id)}"]`).getAttribute("data-page"), eventCode, matchNumber, teamNumber);
 					};
 				});
