@@ -93,6 +93,12 @@ const ScoutingAppSDK = function(element, config) {
 
     const MAX_QR_LENGTH = 128;
 
+    function checkNull(object1, object2) {
+    	console.trace(object1, object2);
+    	console.trace((object1 !== null && object1 !== undefined) ? object1 : object2);
+    	return (object1 !== null && object1 !== undefined) ? object1 : object2;
+    }
+
     this.escape = (string) => {
     	const escapedChars = [
 			{character: "&", replacement: "&amp;"},
@@ -777,7 +783,7 @@ const ScoutingAppSDK = function(element, config) {
 					defaultValue = component.default;
 				}
 				pendingFunctions.push(async () => {
-					await this.setData(component.data, data[component.data] ?? defaultValue);
+					await this.setData(component.data, checkNull(data[component.data], defaultValue));
 					element.querySelector(`[data-id="${this.escape(id)}"] > button`).onclick = async () => {
 						let grid = element.querySelector(`[data-id="${this.escape(id)}"] > .component-locations-container > .grid`);
 						if(parseInt(grid.getAttribute("data-orientation")) == 0) {
@@ -793,12 +799,12 @@ const ScoutingAppSDK = function(element, config) {
 					let gridElements = element.querySelectorAll(`[data-id="${this.escape(id)}"] > .component-locations-container > .grid > div`);
 					for(let i = 0; i < gridElements.length; i++) {
 						gridElements[i].onclick = async (e) => {
-							let result = await this.showLocationPopup(e.target.getAttribute("data-index"), options, data[component.data] ?? defaultValue);
+							let result = await this.showLocationPopup(e.target.getAttribute("data-index"), options, checkNull(data[component.data], defaultValue));
 							// console.log(result);
 							if(result != null) {
 								await this.setData(component.data, result);
 								for(let index = 0; index < (rows * columns); index++) {
-									if((data[component.data] ?? []).filter(loc => loc.index == index).length > 0) {
+									if((checkNull(data[component.data], [])).filter(loc => loc.index == index).length > 0) {
 										element.querySelector(`[data-id="${this.escape(id)}"] > .component-locations-container > .grid > div[data-index="${this.escape(index)}"]`).classList.add("active");
 									} else {
 										element.querySelector(`[data-id="${this.escape(id)}"] > .component-locations-container > .grid > div[data-index="${this.escape(index)}"]`).classList.remove("active");
@@ -815,7 +821,7 @@ const ScoutingAppSDK = function(element, config) {
 							fieldOrientation == 1 ? " transform: scaleX(-1) scaleY(-1);" : ""}">
 								${[...(new Array(rows)).keys()].map((row, rowindex) => {
 									return [...(new Array(columns)).keys()].map((column, columnindex) => {
-										return `<div style="grid-area: ${rowindex + 1} / ${columnindex + 1} / ${rowindex + 2} / ${columnindex + 2};" data-row="${rowindex}" data-column="${columnindex}" data-index="${(rowindex * columns) + columnindex}"${(data[component.data] ?? []).filter(loc => loc.index == (rowindex * columns) + columnindex).length > 0 ? ` class="active"` : ""}></div>`
+										return `<div style="grid-area: ${rowindex + 1} / ${columnindex + 1} / ${rowindex + 2} / ${columnindex + 2};" data-row="${rowindex}" data-column="${columnindex}" data-index="${(rowindex * columns) + columnindex}"${(checkNull(data[component.data], [])).filter(loc => loc.index == (rowindex * columns) + columnindex).length > 0 ? ` class="active"` : ""}></div>`
 									}).join("")
 								}).join("")}
 							</div>
@@ -857,7 +863,7 @@ const ScoutingAppSDK = function(element, config) {
 				});
 				resolve(`
 					<div class="component-checkbox" data-id="${this.escape(id)}">
-						<input type="checkbox" id="${this.escape(id)}" ${(data[component.data] ?? defaultValue) ? "checked" : ""} />
+						<input type="checkbox" id="${this.escape(id)}" ${(checkNull(data[component.data], defaultValue)) ? "checked" : ""} />
 						<span class="checkmark"></span>
 						<label for="${this.escape(id)}">${label}</label>
 					</div>
@@ -954,10 +960,10 @@ const ScoutingAppSDK = function(element, config) {
 				});
 				resolve(`
 					<div class="component-timer" data-id="${this.escape(id)}">
-						<h2>${this.escape(label)}: <span>${this.timerFormat(data[component.data] ?? defaultValue)}</span></h2>
+						<h2>${this.escape(label)}: <span>${this.timerFormat(checkNull(data[component.data], defaultValue))}</span></h2>
 						<div class="button-container">
 							<button class="minus">&nbsp;<span>-</span></button>
-							<button class="timer" ${(timers[name]?.restricted ?? false) ? "disabled" : ""}>${(timers[name]?.running ?? false) ? "Stop" : "Start"}</button>
+							<button class="timer" ${(checkNull(timers[name]?.restricted, false)) ? "disabled" : ""}>${(checkNull(timers[name]?.running, false)) ? "Stop" : "Start"}</button>
 							<button class="plus">&nbsp;<span>+</span></button>
 						</div>
 					</div>
@@ -987,7 +993,7 @@ const ScoutingAppSDK = function(element, config) {
 						<h2>${this.escape(label)}</h2>
 						<select>
 							${options.map((option, index) => {
-								return `<option value="${index}" ${index == (data[component.data] ?? defaultValue) ? "selected" : ""}>${this.escape(option.label)}</option>`;
+								return `<option value="${index}" ${index == (checkNull(data[component.data], defaultValue)) ? "selected" : ""}>${this.escape(option.label)}</option>`;
 							})}
 						</select>
 					</div>
@@ -1008,7 +1014,7 @@ const ScoutingAppSDK = function(element, config) {
 					};
 					await this.setData(component.data, element.querySelector(`[data-id="${this.escape(id)}"]`).value);
 				});
-				resolve(`<textarea class="component-textbox" placeholder="${this.escape(placeholder)}" data-id="${this.escape(id)}">${this.escape(data[component.data] ?? defaultValue)}</textarea>`);
+				resolve(`<textarea class="component-textbox" placeholder="${this.escape(placeholder)}" data-id="${this.escape(id)}">${this.escape(checkNull(data[component.data], defaultValue))}</textarea>`);
 			} else if(component.type == "upload") {
 				let id = this.random();
 				pendingFunctions.push(async () => {
