@@ -535,9 +535,9 @@ const ScoutingAppSDK = function(element, config) {
 					red: {
 						score: 0,
 						team_keys: [
-							"frc0",
-							"frc0",
-							"frc0"
+							"frc1r",
+							"frc2r",
+							"frc3r"
 						],
 						surrogate_team_keys: [],
 						dq_team_keys: []
@@ -545,9 +545,9 @@ const ScoutingAppSDK = function(element, config) {
 					blue: {
 						score: 0,
 						team_keys: [
-							"frc0",
-							"frc0",
-							"frc0"
+							"frc1b",
+							"frc2b",
+							"frc3b"
 						],
 						surrogate_team_keys: [],
 						dq_team_keys: []
