@@ -355,7 +355,8 @@ function onDeviceReady() {
 			contentColor: "#404040",
 			primaryBackgroundColor: "#39547b",
 			primaryContentColor: "#e5eef4",
-			primaryDarkerBackgroundColor: "#2b405f"
+			primaryDarkerBackgroundColor: "#2b405f",
+			disabledColor: "#747474"
 		},
 		pages: data.game2022,
 		event: {
@@ -403,7 +404,10 @@ function onDeviceReady() {
 		console.log(formatted)
 		return formatted;
 	}
-
-	sdk.showLoginPage();
+	if(window.location.pathname == "/download" || window.location.pathname == "/download.html") {
+		sdk.showDownloadPage();
+	} else {
+		sdk.showLoginPage();
+	}
 	window.scoutingsdk = sdk;
 }

@@ -331,7 +331,7 @@ const ScoutingAppSDK = function(element, config) {
 					} catch(err) {
 						
 					}
-					await this.showScannerPage();
+					await this.showScannerPage(eventCode);
 				}
 				let codes = [];
 				try {
@@ -401,6 +401,75 @@ const ScoutingAppSDK = function(element, config) {
 					}
 				} catch(err) {
 
+				}
+			}
+			resolve();
+		});
+	}
+
+	this.showDownloadPage = (_eventCode = "") => {
+		return new Promise(async (resolve, reject) => {
+			if(await this.getUser() == "") {
+				await this.showLoginPage();
+			} else {
+				if(config.event.editable == false && config.event.code != "") {
+					_eventCode = config.event.code;
+					await this.setEventCode(_eventCode);
+				}
+				element.innerHTML = `
+					<div class="download-window">
+						<div class="button-row">
+							<button class="log-out">Log Out</button>
+							<button class="scout">Scout</button>
+							<button class="switch-accounts">Switch Accounts</button>
+						</div>
+						<h2>Event Code:</h2>
+						<input class="event-code" value="${this.escape(_eventCode || await this.getEventCode())}"${config.event.editable ? "" : " readonly"} />
+						<h2>Filename:</h2>
+						<input class="filename" value="data.csv" />
+						<button class="download-csv">Download CSV</button>
+						<h3 class="red">&nbsp;</h3>
+					</div>
+				`;
+				element.querySelector(".button-row > button.log-out").onclick = async () => {
+					await this.logout();
+					await this.showLoginPage();
+				}
+				element.querySelector(".button-row > button.switch-accounts").onclick = async () => {
+					await this.logoutUser();
+					await this.showLoginPage();
+				}
+				element.querySelector(".button-row > button.scout").onclick = async () => {
+					await this.showHomePage();
+				}
+				element.querySelector("button.download-csv").onclick = async () => {
+					let eventCode = element.querySelector(".download-window > input.event-code").value;
+					let filename = element.querySelector(".download-window > input.filename").value;
+					try {
+						let data = await (await fetch(`${config.upload.endpoint}/data?key=${encodeURIComponent(await getKey())}&eventcode=${encodeURIComponent(eventCode)}`)).json();
+						if(data.success) {
+							element.querySelector(".red").innerHTML = "&nbsp;";
+							let csv = ["matchNum,teamNum,teamColor,locations,outcomes,climbLevel,initLinePassed,autonCount,humanPlayerScored,climbTime,brickTime,defenseTime,scouterName,comments"];
+							let contents = data.contents;
+							for(let i = 0; i < contents.length; i++) {
+								csv.push(contents[i].contents);
+							}
+							let joined = csv.join("\r\n");
+							let download = "data:text/csv;charset=utf-8," + joined;
+							let link = document.createElement("a");
+							link.style.display = "none";
+							link.setAttribute("href", download);
+							link.setAttribute("download", filename || "data.csv");
+							element.appendChild(link);
+							link.click();
+							link.remove();
+							console.log(joined);
+						} else {
+							element.querySelector(".red").innerHTML = data.error || "Unknown error.";
+						}
+					} catch(err) {
+
+					}
 				}
 			}
 			resolve();
@@ -1024,11 +1093,15 @@ const ScoutingAppSDK = function(element, config) {
 		if(configuration.theme.primaryDarkerBackgroundColor == null || configuration.theme.primaryDarkerBackgroundColor == "") {
 			configuration.theme.primaryDarkerBackgroundColor = "#2b405f";
 		}
+		if(configuration.theme.disabledColor == null || configuration.theme.disabledColor == "") {
+			configuration.theme.disabledColor = "#747474";
+		}
 		document.documentElement.style.setProperty('--backgroundColor', configuration.theme.backgroundColor);
 		document.documentElement.style.setProperty('--contentColor', configuration.theme.contentColor);
 		document.documentElement.style.setProperty('--primaryBackgroundColor', configuration.theme.primaryBackgroundColor);
 		document.documentElement.style.setProperty('--primaryContentColor', configuration.theme.primaryContentColor);
 		document.documentElement.style.setProperty('--primaryDarkerBackgroundColor', configuration.theme.primaryDarkerBackgroundColor);
+		document.documentElement.style.setProperty('--disabledColor', configuration.theme.disabledColor);
 		if(configuration.pages == null) {
 			configuration.pages = [];
 		}
