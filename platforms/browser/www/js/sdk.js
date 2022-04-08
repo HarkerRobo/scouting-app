@@ -434,13 +434,16 @@ const ScoutingAppSDK = function(element, config) {
 				element.querySelector(".button-row > button.log-out").onclick = async () => {
 					await this.logout();
 					await this.showLoginPage();
+					window.location.href = "./";
 				}
 				element.querySelector(".button-row > button.switch-accounts").onclick = async () => {
 					await this.logoutUser();
 					await this.showLoginPage();
+					window.location.href = "./";
 				}
 				element.querySelector(".button-row > button.scout").onclick = async () => {
 					await this.showHomePage();
+					window.location.href = "./";
 				}
 				element.querySelector("button.download-csv").onclick = async () => {
 					let eventCode = element.querySelector(".download-window > input.event-code").value;
