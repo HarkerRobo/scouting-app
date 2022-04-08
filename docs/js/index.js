@@ -40,6 +40,7 @@ function onDeviceReady() {
 						data: "auto_locations",
 						rows: 4,
 						columns: 5,
+						orientation: 1,
 						options: [
 							{
 								label: "Upper",
@@ -104,6 +105,7 @@ function onDeviceReady() {
 						data: "teleop_locations",
 						rows: 4,
 						columns: 5,
+						orientation: 1,
 						options: [
 							{
 								label: "Upper",

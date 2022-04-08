@@ -723,6 +723,7 @@ const ScoutingAppSDK = function(element, config) {
 	}
 
 	let fieldOrientation = 0;
+	let fieldOrientationSet = false;
 
 	this.compileComponent = (eventCode, matchNumber, teamNumber, component = {}) => {
 		return new Promise(async (resolve, reject) => {
@@ -772,6 +773,10 @@ const ScoutingAppSDK = function(element, config) {
 				if(typeof component.columns == "number") {
 					columns = component.columns;
 				}
+				let orientation = 0;
+				if(typeof component.orientation == "number") {
+					orientation = component.orientation;
+				}
 				let options = [];
 				if(component.options instanceof Array) {
 					options = component.options;
@@ -787,10 +792,12 @@ const ScoutingAppSDK = function(element, config) {
 						if(parseInt(grid.getAttribute("data-orientation")) == 0) {
 							grid.style.transform = "scaleX(-1) scaleY(-1)";
 							fieldOrientation = 1;
+							fieldOrientationSet = true;
 							grid.setAttribute("data-orientation", 1);
 						} else {
 							grid.style.transform = "";
 							fieldOrientation = 0;
+							fieldOrientationSet = true;
 							grid.setAttribute("data-orientation", 0);
 						}
 					}
@@ -815,8 +822,8 @@ const ScoutingAppSDK = function(element, config) {
 				resolve(`
 					<div class="component-locations" data-id="${this.escape(id)}">
 						<div class="component-locations-container">
-							<div class="grid" data-orientation="${this.escape(fieldOrientation)}" style="grid-template-rows: repeat(${this.escape(rows)}, 1fr); grid-template-columns: repeat(${this.escape(columns)}, 1fr); background-image: url(${this.escape(src)});${
-							fieldOrientation == 1 ? " transform: scaleX(-1) scaleY(-1);" : ""}">
+							<div class="grid" data-orientation="${this.escape(fieldOrientationSet ? fieldOrientation : orientation)}" style="grid-template-rows: repeat(${this.escape(rows)}, 1fr); grid-template-columns: repeat(${this.escape(columns)}, 1fr); background-image: url(${this.escape(src)});${
+							(fieldOrientationSet ? fieldOrientation : orientation) == 1 ? " transform: scaleX(-1) scaleY(-1);" : ""}">
 								${[...(new Array(rows)).keys()].map((row, rowindex) => {
 									return [...(new Array(columns)).keys()].map((column, columnindex) => {
 										return `<div style="grid-area: ${rowindex + 1} / ${columnindex + 1} / ${rowindex + 2} / ${columnindex + 2};" data-row="${rowindex}" data-column="${columnindex}" data-index="${(rowindex * columns) + columnindex}"${(checkNull(data[component.data], [])).filter(loc => loc.index == (rowindex * columns) + columnindex).length > 0 ? ` class="active"` : ""}></div>`
