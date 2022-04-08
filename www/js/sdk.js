@@ -94,8 +94,6 @@ const ScoutingAppSDK = function(element, config) {
     const MAX_QR_LENGTH = 128;
 
     function checkNull(object1, object2) {
-    	console.trace(object1, object2);
-    	console.trace((object1 !== null && object1 !== undefined) ? object1 : object2);
     	return (object1 !== null && object1 !== undefined) ? object1 : object2;
     }
 
@@ -963,7 +961,7 @@ const ScoutingAppSDK = function(element, config) {
 						<h2>${this.escape(label)}: <span>${this.timerFormat(checkNull(data[component.data], defaultValue))}</span></h2>
 						<div class="button-container">
 							<button class="minus">&nbsp;<span>-</span></button>
-							<button class="timer" ${(checkNull(timers[name]?.restricted, false)) ? "disabled" : ""}>${(checkNull(timers[name]?.running, false)) ? "Stop" : "Start"}</button>
+							<button class="timer" ${(checkNull(checkNull(timers[name], {}).restricted, false)) ? "disabled" : ""}>${(checkNull(checkNull(timers[name], {}).running, false)) ? "Stop" : "Start"}</button>
 							<button class="plus">&nbsp;<span>+</span></button>
 						</div>
 					</div>
