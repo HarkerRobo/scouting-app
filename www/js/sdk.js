@@ -509,7 +509,39 @@ const ScoutingAppSDK = function(element, config) {
 	this.getMatch = (eventCode, matchNumber, setNumber = 1, compLevel = "qm") => {
 		return new Promise(async (resolve, reject) => {
 			let matches = await this.getMatches(eventCode);
-			resolve((matches.filter(match => matchNumber == match.match_number && setNumber == match.set_number && compLevel == match.comp_level) || [{}])[0] || {});
+			let fallback = {
+				comp_level: compLevel,
+				set_number: setNumber,
+				match_number: matchNumber,
+				alliances: {
+					red: {
+						score: 0,
+						team_keys: [
+							"frc0",
+							"frc0",
+							"frc0"
+						],
+						surrogate_team_keys: [],
+						dq_team_keys: []
+					},
+					blue: {
+						score: 0,
+						team_keys: [
+							"frc0",
+							"frc0",
+							"frc0"
+						],
+						surrogate_team_keys: [],
+						dq_team_keys: []
+					}
+				},
+				winning_alliance: "red",
+				event_key: eventCode,
+				time: 0,
+				predicted_time: 0,
+				actual_time: 0
+			}
+			resolve((matches.filter(match => matchNumber == match.match_number && setNumber == match.set_number && compLevel == match.comp_level) || [fallback])[0] || fallback);
 		});
 	}
 
