@@ -404,7 +404,8 @@ function onDeviceReady() {
 		console.log(formatted)
 		return formatted;
 	}
-	if(window.location.pathname == "/download" || window.location.pathname == "/download.html") {
+
+	if(["download", "download.html"].includes(window.location.pathname.split("/")[window.location.pathname.split("/").length - 1])) {
 		sdk.showDownloadPage();
 	} else {
 		sdk.showLoginPage();
