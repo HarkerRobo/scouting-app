@@ -204,6 +204,10 @@ function onDeviceReady() {
 						label: "NOTES"
 					},
 					{
+						type: "text",
+						label: "Please give any important information about this robot or its performance in the match including:\n\n- Driver skill\n- Ability to defend\n- Ability to score against defense\n- Robot stability\n- Fouls or other issues\n- Anything else that is relevant"
+					},
+					{
 						type: "textbox",
 						placeholder: "Enter notes here...",
 						default: "",

@@ -274,6 +274,16 @@ body {
 	margin-bottom: 15px;
 }
 
+.match-window .component-text {
+	color: var(--contentColor);
+	width: calc(100% - 10px);
+	max-width: 800px;
+	margin: 0;
+	margin-bottom: 20px;
+	margin-left: 50%;
+	transform: translate(-50%, 0);
+}
+
 .match-window .component-checkbox {
 	text-align: center;
 	margin: 10px;
@@ -491,7 +501,7 @@ body {
 	color: var(--contentColor);
 	width: 100%;
 	max-width: 800px;
-	height: calc(100vh - 250px);
+	height: calc(100vh - 400px);
 	max-height: 600px;
 	box-sizing: border-box;
 	margin: 0;

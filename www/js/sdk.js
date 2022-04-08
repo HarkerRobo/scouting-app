@@ -650,7 +650,7 @@ const ScoutingAppSDK = function(element, config) {
 
 	this.compileComponent = (eventCode, matchNumber, teamNumber, component = {}) => {
 		return new Promise(async (resolve, reject) => {
-			let types = ["layout", "title", "locations", "pagebutton", "checkbox", "timer", "select", "textbox", "tbaverify", "upload", "qrcode", "data"];
+			let types = ["layout", "title", "text", "locations", "pagebutton", "checkbox", "timer", "select", "textbox", "tbaverify", "upload", "qrcode", "data"];
 			let type = component.type;
 			if(!types.includes(type)) {
 				type = "layout";
@@ -676,6 +676,12 @@ const ScoutingAppSDK = function(element, config) {
 					label = component.label.toString();
 				}
 				resolve(`<h1 class="component-title">${this.escape(label)}</h1>`);
+			} else if(component.type == "text") {
+				let label = "";
+				if(component.label != null) {
+					label = component.label.toString();
+				}
+				resolve(`<p class="component-text">${this.escape(label).replace(new RegExp("\n", "g"), "<br>")}</p>`);
 			} else if(component.type == "locations") {
 				let id = this.random();
 				let src = "";
