@@ -573,7 +573,7 @@ const ScoutingAppSDK = function(element, config) {
 			try {
 				let matches = await (await fetch(`${config.upload.endpoint}/matches?key=${encodeURIComponent(await getKey())}&eventcode=${encodeURIComponent(eventCode)}`)).json();
 				if(matches.success) {
-					localStorage.setItem(`matches::${eventCode}`, JSON.parse(JSON.stringify(matches.contents)));
+					localStorage.setItem(`matches::${eventCode}`, JSON.parse(JSON.stringify(matches.contents || "[]")));
 					resolve(true);
 				} else {
 					resolve(false);

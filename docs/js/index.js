@@ -362,7 +362,7 @@ function onDeviceReady() {
 		},
 		pages: data.game2022,
 		event: {
-			code: "2022cada",
+			code: "2022casj-prac",
 			editable: false
 		},
 		upload: {
