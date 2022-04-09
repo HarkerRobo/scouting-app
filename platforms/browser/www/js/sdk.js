@@ -302,6 +302,7 @@ const ScoutingAppSDK = function(element, config) {
 							<button class="scout">Scout</button>
 							<button class="switch-accounts">Switch Accounts</button>
 						</div>
+						<button class="switch-camera">Switch Camera</button>
 						<p>&nbsp;</p>
 						<div class="reader" id="reader"></div>
 						<div class="upload"></div>
@@ -343,13 +344,72 @@ const ScoutingAppSDK = function(element, config) {
 					}
 					await this.showScannerPage(eventCode);
 				}
+				let devices = [];
 				let codes = [];
-				try {
-					let devices = await Html5Qrcode.getCameras();
-					console.log(devices);
-					if(devices.length > 0) {
+				let deviceIndex = 0;
+
+				let _topLevel = this;
+				async function scanResult(decodedText, decodedResult) {
+					try {
+						let data = JSON.parse(decodedText);
+						codes[data[0]] = data[2];
+						element.querySelector(".scanner-window > p").innerHTML = `${codes.filter(code => code != null).length}/${data[1]}`;
+						if(codes.filter(code => code != null).length == data[1]) {
+							console.log(codes.join(""));
+							element.querySelector(".scanner-window > p").innerHTML = "&nbsp;";
+							await reader.stop();
+							element.querySelector(".scanner-window > button.switch-camera").style.display = "none";
+
+							try {
+								element.querySelector(".scanner-window > .upload").innerHTML = "<h3>Preparing...</h3>";
+								let formatted = codes.join("");
+								element.querySelector(".scanner-window > .upload").innerHTML += `<h3>Uploading...</h3>`;
+								let upload = await (await fetch(`${config.upload.endpoint}/upload`, {
+									method: "POST",
+									headers: {
+										'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+									},
+									body: `key=${encodeURIComponent(await getKey())}&contents=${encodeURIComponent(formatted)}&eventcode=${encodeURIComponent(eventCode)}&hash=${encodeURIComponent(await _topLevel.hash(eventCode + "::" + formatted))}`
+								})).json();
+								if(upload.success) {
+									element.querySelector(".scanner-window > .upload").innerHTML += `<h3>Verifying...</h3>`;
+									let verify = await (await fetch(`${config.upload.endpoint}/verify?key=${encodeURIComponent(await getKey())}&hash=${encodeURIComponent(await _topLevel.hash(eventCode + "::" + formatted))}`)).json();
+									if(verify.success) {
+										element.querySelector(".scanner-window > .upload").innerHTML += `<h3 class="primary">Success!</h3>`;
+										element.querySelector(".scanner-window > button.scan-again").style.display = "block";
+									} else {
+										element.querySelector(".scanner-window > .upload").innerHTML += `<h3 class="red">Upload Failed!<br>${verify.error || "Unable to verify upload completion."}</h3>`;
+										element.querySelector(".scanner-window > button.scan-again").style.display = "block";
+									}
+								} else {
+									element.querySelector(".scanner-window > .upload").innerHTML += `<h3 class="red">Upload Failed!<br>${upload.error || "Unknown error."}</h3>`;
+									element.querySelector(".scanner-window > button.scan-again").style.display = "block";
+								}
+							} catch(err) {
+								console.error(err);
+								element.querySelector(".scanner-window > .upload").innerHTML += `<h3 class="red">Upload Failed!<br>Could not connect to the server.</h3>`;
+								element.querySelector(".scanner-window > button.scan-again").style.display = "block";
+							}
+						}
+					} catch(err) {
+
+					}
+					// console.log(decodedText);
+					// console.log(decodedResult);
+				}
+				element.querySelector("button.switch-camera").onclick = async () => {
+					try {
+						await reader.stop()
+					} catch(err) {
+						
+					}
+					deviceIndex++;
+					if(deviceIndex >= devices.length) {
+						deviceIndex = 0;
+					}
+					try {
 						reader.start(
-							devices[0].id,
+							devices[deviceIndex].id,
 							{
 								fps: 10,
 								qrbox: {
@@ -358,56 +418,36 @@ const ScoutingAppSDK = function(element, config) {
 								}
 							},
 							async (decodedText, decodedResult) => {
-								try {
-									let data = JSON.parse(decodedText);
-									codes[data[0]] = data[2];
-									element.querySelector(".scanner-window > p").innerHTML = `${codes.filter(code => code != null).length}/${data[1]}`;
-									if(codes.filter(code => code != null).length == data[1]) {
-										console.log(codes.join(""));
-										element.querySelector(".scanner-window > p").innerHTML = "&nbsp;";
-										await reader.stop();
-
-										try {
-											element.querySelector(".scanner-window > .upload").innerHTML = "<h3>Preparing...</h3>";
-											let formatted = codes.join("");
-											element.querySelector(".scanner-window > .upload").innerHTML += `<h3>Uploading...</h3>`;
-											let upload = await (await fetch(`${config.upload.endpoint}/upload`, {
-												method: "POST",
-												headers: {
-													'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-												},
-												body: `key=${encodeURIComponent(await getKey())}&contents=${encodeURIComponent(formatted)}&eventcode=${encodeURIComponent(eventCode)}&hash=${encodeURIComponent(await this.hash(eventCode + "::" + formatted))}`
-											})).json();
-											if(upload.success) {
-												element.querySelector(".scanner-window > .upload").innerHTML += `<h3>Verifying...</h3>`;
-												let verify = await (await fetch(`${config.upload.endpoint}/verify?key=${encodeURIComponent(await getKey())}&hash=${encodeURIComponent(await this.hash(eventCode + "::" + formatted))}`)).json();
-												if(verify.success) {
-													element.querySelector(".scanner-window > .upload").innerHTML += `<h3 class="primary">Success!</h3>`;
-													element.querySelector(".scanner-window > button").style.display = "block";
-												} else {
-													element.querySelector(".scanner-window > .upload").innerHTML += `<h3 class="red">Upload Failed!<br>${verify.error || "Unable to verify upload completion."}</h3>`;
-													element.querySelector(".scanner-window > button").style.display = "block";
-												}
-											} else {
-												element.querySelector(".scanner-window > .upload").innerHTML += `<h3 class="red">Upload Failed!<br>${upload.error || "Unknown error."}</h3>`;
-												element.querySelector(".scanner-window > button").style.display = "block";
-											}
-										} catch(err) {
-											// console.error(err);
-											element.querySelector(".scanner-window > .upload").innerHTML += `<h3 class="red">Upload Failed!<br>Could not connect to the server.</h3>`;
-											element.querySelector(".scanner-window > button").style.display = "block";
-										}
-									}
-								} catch(err) {
-
-								}
-								// console.log(decodedText);
-								// console.log(decodedResult);
+								await scanResult(decodedText, decodedResult);
 							},
 							async (errorMessage) => {
 								// console.error(errorMessage);
 							}
-						)
+						);
+					} catch(err) {
+
+					}
+				}
+				try {
+					devices = await Html5Qrcode.getCameras();
+					console.log(devices);
+					if(devices.length > 0) {
+						reader.start(
+							devices[deviceIndex].id,
+							{
+								fps: 10,
+								qrbox: {
+									width: getQRScannerSize(),
+									height: getQRScannerSize()
+								}
+							},
+							async (decodedText, decodedResult) => {
+								await scanResult(decodedText, decodedResult);
+							},
+							async (errorMessage) => {
+								// console.error(errorMessage);
+							}
+						);
 					}
 				} catch(err) {
 
