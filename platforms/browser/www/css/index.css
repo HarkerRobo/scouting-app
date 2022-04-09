@@ -506,6 +506,7 @@ body {
 	width: 100%;
 	max-width: 800px;
 	height: calc(100vh - 400px);
+	min-height: 300px;
 	max-height: 600px;
 	box-sizing: border-box;
 	margin: 0;
