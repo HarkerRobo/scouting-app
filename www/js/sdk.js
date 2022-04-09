@@ -791,13 +791,31 @@ const ScoutingAppSDK = function(element, config) {
 			} else if(component.type == "title") {
 				let label = "";
 				if(component.label != null) {
-					label = component.label.toString();
+					if(typeof component.label == "function") {
+						label = component.label({
+							eventCode: eventCode,
+							matchNumber: matchNumber,
+							teamNumber: teamNumber,
+							data: data
+						});
+					} else {
+						label = component.label.toString();
+					}
 				}
 				resolve(`<h1 class="component-title">${this.escape(label)}</h1>`);
 			} else if(component.type == "text") {
 				let label = "";
 				if(component.label != null) {
-					label = component.label.toString();
+					if(typeof component.label == "function") {
+						label = component.label({
+							eventCode: eventCode,
+							matchNumber: matchNumber,
+							teamNumber: teamNumber,
+							data: data
+						});
+					} else {
+						label = component.label.toString();
+					}
 				}
 				resolve(`<p class="component-text">${this.escape(label).replace(new RegExp("\n", "g"), "<br>")}</p>`);
 			} else if(component.type == "locations") {
@@ -883,7 +901,16 @@ const ScoutingAppSDK = function(element, config) {
 				}
 				let label = "";
 				if(component.label != null) {
-					label = component.label.toString();
+					if(typeof component.label == "function") {
+						label = component.label({
+							eventCode: eventCode,
+							matchNumber: matchNumber,
+							teamNumber: teamNumber,
+							data: data
+						});
+					} else {
+						label = component.label.toString();
+					}
 				}
 				pendingFunctions.push(async () => {
 					element.querySelector(`[data-id="${this.escape(id)}"]`).onclick = async () => {
@@ -903,7 +930,16 @@ const ScoutingAppSDK = function(element, config) {
 				let id = this.random();
 				let label = "";
 				if(component.label != null) {
-					label = component.label.toString();
+					if(typeof component.label == "function") {
+						label = component.label({
+							eventCode: eventCode,
+							matchNumber: matchNumber,
+							teamNumber: teamNumber,
+							data: data
+						});
+					} else {
+						label = component.label.toString();
+					}
 				}
 				let defaultValue = false;
 				if(typeof component.default == "boolean") {
@@ -926,7 +962,16 @@ const ScoutingAppSDK = function(element, config) {
 				let id = this.random();
 				let label = "";
 				if(component.label != null) {
-					label = component.label.toString();
+					if(typeof component.label == "function") {
+						label = component.label({
+							eventCode: eventCode,
+							matchNumber: matchNumber,
+							teamNumber: teamNumber,
+							data: data
+						});
+					} else {
+						label = component.label.toString();
+					}
 				}
 				let name = "";
 				if(component.name != null) {
@@ -1026,7 +1071,16 @@ const ScoutingAppSDK = function(element, config) {
 				let id = this.random();
 				let label = "";
 				if(component.label != null) {
-					label = component.label.toString();
+					if(typeof component.label == "function") {
+						label = component.label({
+							eventCode: eventCode,
+							matchNumber: matchNumber,
+							teamNumber: teamNumber,
+							data: data
+						});
+					} else {
+						label = component.label.toString();
+					}
 				}
 				let defaultValue = 0;
 				if(typeof component.default == "number") {

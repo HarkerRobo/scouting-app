@@ -18,8 +18,8 @@
 	"keywords": [
 		"ecosystem:cordova"
 	],
-	"author": "Apache Cordova Team",
-	"license": "Apache-2.0",
+	"author": "Kabir Ramzan",
+	"license": "AGPL-3.0-or-later",
 	"devDependencies": {
 		"cordova-browser": "^6.0.0",
 		"cordova-ios": "^6.2.0",

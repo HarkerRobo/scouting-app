@@ -11,7 +11,7 @@ function onDeviceReady() {
 				components: [
 					{
 						type: "title",
-						label: "AUTO"
+						label: (state) => `AUTO (${state.teamNumber})`
 					},
 					{
 						type: "checkbox",
@@ -80,7 +80,7 @@ function onDeviceReady() {
 				components: [
 					{
 						type: "title",
-						label: "TELEOP"
+						label: (state) => `TELEOP (${state.teamNumber})`
 					},
 					{
 						type: "timer",
@@ -146,7 +146,7 @@ function onDeviceReady() {
 				components: [
 					{
 						type: "title",
-						label: "ENDGAME"
+						label: (state) => `ENDGAME (${state.teamNumber})`
 					},
 					{
 						type: "timer",
@@ -203,7 +203,7 @@ function onDeviceReady() {
 				components: [
 					{
 						type: "title",
-						label: "NOTES"
+						label: (state) => `NOTES (${state.teamNumber})`
 					},
 					{
 						type: "text",
