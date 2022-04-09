@@ -165,12 +165,18 @@ const ScoutingAppSDK = function(element, config) {
 		});
 	}
 
+	let timers = {};
+	window.t = timers;
+
+	let data = {};
+
 	this.showHomePage = (_eventCode = "", _matchNumber = "", _teamNumber = "") => {
 		return new Promise(async (resolve, reject) => {
 			if(await this.getUser() == "") {
 				await this.showLoginPage();
 			} else {
 				data = {};
+				timers = {};
 				if(config.event.editable == false && config.event.code != "") {
 					_eventCode = config.event.code;
 					await this.setEventCode(_eventCode);
@@ -649,8 +655,6 @@ const ScoutingAppSDK = function(element, config) {
 		});
 	}
 
-	let data = {};
-
 	this.setData = (key, value) => {
 		return new Promise(async (resolve, reject) => {
 			if(key != null) {
@@ -661,9 +665,6 @@ const ScoutingAppSDK = function(element, config) {
 			console.log(data);
 		});
 	}
-
-	let timers = {};
-	window.t = timers;
 
 	this.random = () => {
 		return `${Date.now()}::${parseInt(Math.random() * 1000000000).toString(16)}`;
