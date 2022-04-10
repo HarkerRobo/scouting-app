@@ -1,0 +1,15 @@
+{
+  "name": "com.kabirramzan.harkerrobo.scoutingappanalysis",
+  "displayName": "HarkerRoboScoutingAppAnalysis",
+  "version": "1.0.0",
+  "description": "The scouting application analysis script for Harker Robotics (FRC team 1072)",
+  "main": "stats.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kabir Ramzan",
+  "license": "AGPL-3.0-or-later",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}
