@@ -1,15 +1,15 @@
 {
-  "colors": [
-    {
-      "idiom": "universal",
-      "color": {
-        "platform": "ios",
-        "reference": "systemBackgroundColor"
-      }
+    "colors": [
+        {
+            "idiom": "universal",
+            "color": {
+                "platform": "ios",
+                "reference": "systemBackgroundColor"
+            }
+        }
+    ],
+    "info": {
+        "author": "Xcode",
+        "version": 1
     }
-  ],
-  "info": {
-    "author": "Xcode",
-    "version": 1
-  }
 }

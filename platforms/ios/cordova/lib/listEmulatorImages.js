@@ -17,13 +17,13 @@
        under the License.
 */
 
-var iossim = require('ios-sim');
+var iossim = require("ios-sim");
 
 /**
  * Gets list of iOS devices available for simulation
  * @return {Promise} Promise fulfilled with list of devices available for simulation
  */
-function listEmulatorImages () {
+function listEmulatorImages() {
     return Promise.resolve(iossim.getdevicetypes());
 }
 

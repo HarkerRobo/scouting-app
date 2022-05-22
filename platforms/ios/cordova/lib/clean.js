@@ -17,31 +17,42 @@
  * under the License.
  */
 
-const path = require('path');
-const fs = require('fs-extra');
+const path = require("path");
+const fs = require("fs-extra");
 const {
     CordovaError,
     superspawn: { spawn }
-} = require('cordova-common');
+} = require("cordova-common");
 
-const projectPath = path.join(__dirname, '..', '..');
+const projectPath = path.join(__dirname, "..", "..");
 
 module.exports.run = () => {
-    const projectName = fs.readdirSync(projectPath).filter(name => path.extname(name) === '.xcodeproj');
+    const projectName = fs
+        .readdirSync(projectPath)
+        .filter((name) => path.extname(name) === ".xcodeproj");
 
     if (!projectName) {
-        return Promise.reject(new CordovaError(`No Xcode project found in ${projectPath}`));
+        return Promise.reject(
+            new CordovaError(`No Xcode project found in ${projectPath}`)
+        );
     }
 
-    const xcodebuildClean = configName => {
+    const xcodebuildClean = (configName) => {
         return spawn(
-            'xcodebuild',
-            ['-project', projectName, '-configuration', configName, '-alltargets', 'clean'],
-            { cwd: projectPath, printCommand: true, stdio: 'inherit' }
+            "xcodebuild",
+            [
+                "-project",
+                projectName,
+                "-configuration",
+                configName,
+                "-alltargets",
+                "clean"
+            ],
+            { cwd: projectPath, printCommand: true, stdio: "inherit" }
         );
     };
 
-    return xcodebuildClean('Debug')
-        .then(() => xcodebuildClean('Release'))
-        .then(() => fs.removeSync(path.join(projectPath, 'build')));
+    return xcodebuildClean("Debug")
+        .then(() => xcodebuildClean("Release"))
+        .then(() => fs.removeSync(path.join(projectPath, "build")));
 };
