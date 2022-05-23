@@ -17,18 +17,18 @@
        under the License.
 */
 
-const xcode = require('xcode');
-const plist = require('plist');
-const _ = require('underscore');
-const path = require('path');
-const fs = require('fs-extra');
+const xcode = require("xcode");
+const plist = require("plist");
+const _ = require("underscore");
+const path = require("path");
+const fs = require("fs-extra");
 
-const pluginHandlers = require('./plugman/pluginHandlers');
-const CordovaError = require('cordova-common').CordovaError;
+const pluginHandlers = require("./plugman/pluginHandlers");
+const CordovaError = require("cordova-common").CordovaError;
 
 const cachedProjectFiles = {};
 
-function parseProjectFile (locations) {
+function parseProjectFile(locations) {
     const project_dir = locations.root;
     const pbxPath = locations.pbxproj;
 
@@ -40,23 +40,34 @@ function parseProjectFile (locations) {
     xcodeproj.parseSync();
 
     const xcBuildConfiguration = xcodeproj.pbxXCBuildConfigurationSection();
-    const plist_file_entry = _.find(xcBuildConfiguration, entry => entry.buildSettings && entry.buildSettings.INFOPLIST_FILE);
-    const plist_file = path.join(project_dir, plist_file_entry.buildSettings.INFOPLIST_FILE.replace(/^"(.*)"$/g, '$1').replace(/\\&/g, '&'));
-    const config_file = path.join(path.dirname(plist_file), 'config.xml');
+    const plist_file_entry = _.find(
+        xcBuildConfiguration,
+        (entry) => entry.buildSettings && entry.buildSettings.INFOPLIST_FILE
+    );
+    const plist_file = path.join(
+        project_dir,
+        plist_file_entry.buildSettings.INFOPLIST_FILE.replace(
+            /^"(.*)"$/g,
+            "$1"
+        ).replace(/\\&/g, "&")
+    );
+    const config_file = path.join(path.dirname(plist_file), "config.xml");
 
     if (!fs.existsSync(plist_file) || !fs.existsSync(config_file)) {
-        throw new CordovaError('Could not find *-Info.plist file, or config.xml file.');
+        throw new CordovaError(
+            "Could not find *-Info.plist file, or config.xml file."
+        );
     }
 
-    const frameworks_file = path.join(project_dir, 'frameworks.json');
+    const frameworks_file = path.join(project_dir, "frameworks.json");
     let frameworks = {};
     try {
         frameworks = require(frameworks_file);
-    } catch (e) { }
+    } catch (e) {}
 
     const xcode_dir = path.dirname(plist_file);
-    const pluginsDir = path.resolve(xcode_dir, 'Plugins');
-    const resourcesDir = path.resolve(xcode_dir, 'Resources');
+    const pluginsDir = path.resolve(xcode_dir, "Plugins");
+    const resourcesDir = path.resolve(xcode_dir, "Resources");
 
     cachedProjectFiles[project_dir] = {
         plugins_dir: pluginsDir,
@@ -65,8 +76,8 @@ function parseProjectFile (locations) {
         xcode_path: xcode_dir,
         pbx: pbxPath,
         projectDir: project_dir,
-        platformWww: path.join(project_dir, 'platform_www'),
-        www: path.join(project_dir, 'www'),
+        platformWww: path.join(project_dir, "platform_www"),
+        www: path.join(project_dir, "www"),
         write: function () {
             fs.writeFileSync(pbxPath, xcodeproj.writeSync());
             if (Object.keys(this.frameworks).length === 0) {
@@ -74,10 +85,15 @@ function parseProjectFile (locations) {
                 fs.removeSync(frameworks_file);
                 return;
             }
-            fs.writeFileSync(frameworks_file, JSON.stringify(this.frameworks, null, 4));
+            fs.writeFileSync(
+                frameworks_file,
+                JSON.stringify(this.frameworks, null, 4)
+            );
         },
         getPackageName: function () {
-            const packageName = plist.parse(fs.readFileSync(plist_file, 'utf8')).CFBundleIdentifier;
+            const packageName = plist.parse(
+                fs.readFileSync(plist_file, "utf8")
+            ).CFBundleIdentifier;
             let bundleIdentifier = packageName;
 
             const variables = packageName.match(/\$\((\w+)\)/); // match $(VARIABLE), if any
@@ -85,7 +101,7 @@ function parseProjectFile (locations) {
                 bundleIdentifier = xcodeproj.getBuildProperty(variables[1]);
             }
 
-            return bundleIdentifier.replace(/^"/, '').replace(/"$/, '');
+            return bundleIdentifier.replace(/^"/, "").replace(/"$/, "");
         },
         getInstaller: function (name) {
             return pluginHandlers.getInstaller(name);
@@ -98,7 +114,7 @@ function parseProjectFile (locations) {
     return cachedProjectFiles[project_dir];
 }
 
-function purgeProjectFileCache (project_dir) {
+function purgeProjectFileCache(project_dir) {
     delete cachedProjectFiles[project_dir];
 }
 
@@ -108,7 +124,11 @@ module.exports = {
 };
 
 xcode.project.prototype.pbxEmbedFrameworksBuildPhaseObj = function (target) {
-    return this.buildPhaseObject('PBXCopyFilesBuildPhase', 'Embed Frameworks', target);
+    return this.buildPhaseObject(
+        "PBXCopyFilesBuildPhase",
+        "Embed Frameworks",
+        target
+    );
 };
 
 xcode.project.prototype.addToPbxEmbedFrameworksBuildPhase = function (file) {
@@ -117,23 +137,28 @@ xcode.project.prototype.addToPbxEmbedFrameworksBuildPhase = function (file) {
         sources.files.push(pbxBuildPhaseObj(file));
     }
 };
-xcode.project.prototype.removeFromPbxEmbedFrameworksBuildPhase = function (file) {
+xcode.project.prototype.removeFromPbxEmbedFrameworksBuildPhase = function (
+    file
+) {
     const sources = this.pbxEmbedFrameworksBuildPhaseObj(file.target);
     if (sources) {
-        sources.files = _.reject(sources.files, file => file.comment === longComment(file));
+        sources.files = _.reject(
+            sources.files,
+            (file) => file.comment === longComment(file)
+        );
     }
 };
 
 // special handlers to add frameworks to the 'Embed Frameworks' build phase, needed for custom frameworks
 // see CB-9517. should probably be moved to node-xcode.
-const util = require('util');
-function pbxBuildPhaseObj (file) {
+const util = require("util");
+function pbxBuildPhaseObj(file) {
     const obj = Object.create(null);
     obj.value = file.uuid;
     obj.comment = longComment(file);
     return obj;
 }
 
-function longComment (file) {
-    return util.format('%s in %s', file.basename, file.group);
+function longComment(file) {
+    return util.format("%s in %s", file.basename, file.group);
 }

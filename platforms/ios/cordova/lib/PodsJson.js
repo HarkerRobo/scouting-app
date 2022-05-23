@@ -17,36 +17,45 @@
        under the License.
 */
 
-const fs = require('fs-extra');
-const path = require('path');
-const util = require('util');
-const events = require('cordova-common').events;
-const CordovaError = require('cordova-common').CordovaError;
+const fs = require("fs-extra");
+const path = require("path");
+const util = require("util");
+const events = require("cordova-common").events;
+const CordovaError = require("cordova-common").CordovaError;
 
-PodsJson.FILENAME = 'pods.json';
-PodsJson.LIBRARY = 'libraries';
-PodsJson.SOURCE = 'sources';
-PodsJson.DECLARATION = 'declarations';
+PodsJson.FILENAME = "pods.json";
+PodsJson.LIBRARY = "libraries";
+PodsJson.SOURCE = "sources";
+PodsJson.DECLARATION = "declarations";
 
-function PodsJson (podsJsonPath) {
+function PodsJson(podsJsonPath) {
     this.path = podsJsonPath;
     this.contents = null;
     this.__dirty = false;
 
     const filename = this.path.split(path.sep).pop();
     if (filename !== PodsJson.FILENAME) {
-        throw new CordovaError(util.format('PodsJson: The file at %s is not `%s`.', this.path, PodsJson.FILENAME));
+        throw new CordovaError(
+            util.format(
+                "PodsJson: The file at %s is not `%s`.",
+                this.path,
+                PodsJson.FILENAME
+            )
+        );
     }
 
     if (!fs.existsSync(this.path)) {
-        events.emit('verbose', util.format('pods.json: The file at %s does not exist.', this.path));
-        events.emit('verbose', 'Creating new pods.json in platforms/ios');
+        events.emit(
+            "verbose",
+            util.format("pods.json: The file at %s does not exist.", this.path)
+        );
+        events.emit("verbose", "Creating new pods.json in platforms/ios");
         this.clear();
         this.write();
     } else {
-        events.emit('verbose', 'pods.json found in platforms/ios');
+        events.emit("verbose", "pods.json found in platforms/ios");
         // load contents
-        const contents = fs.readFileSync(this.path, 'utf8');
+        const contents = fs.readFileSync(this.path, "utf8");
         this.contents = JSON.parse(contents);
     }
     this.__updateFormatIfNecessary();
@@ -54,9 +63,11 @@ function PodsJson (podsJsonPath) {
 
 PodsJson.prototype.__isOldFormat = function () {
     if (this.contents !== null) {
-        if (this.contents.declarations === undefined ||
+        if (
+            this.contents.declarations === undefined ||
             this.contents.sources === undefined ||
-            this.contents.libraries === undefined) {
+            this.contents.libraries === undefined
+        ) {
             return true;
         }
     }
@@ -71,7 +82,7 @@ PodsJson.prototype.__updateFormatIfNecessary = function () {
             libraries: this.contents
         };
         this.__dirty = true;
-        events.emit('verbose', 'Update format of pods.json');
+        events.emit("verbose", "Update format of pods.json");
     }
 };
 
@@ -99,7 +110,10 @@ PodsJson.prototype.__remove = function (kind, name) {
     if (this.contents[kind][name]) {
         delete this.contents[kind][name];
         this.__dirty = true;
-        events.emit('verbose', util.format('Remove from pods.json for `%s` - `%s`', name));
+        events.emit(
+            "verbose",
+            util.format("Remove from pods.json for `%s` - `%s`", name)
+        );
     }
 };
 
@@ -126,14 +140,14 @@ PodsJson.prototype.clear = function () {
 
 PodsJson.prototype.destroy = function () {
     fs.unlinkSync(this.path);
-    events.emit('verbose', util.format('Deleted `%s`', this.path));
+    events.emit("verbose", util.format("Deleted `%s`", this.path));
 };
 
 PodsJson.prototype.write = function () {
     if (this.contents) {
         fs.writeFileSync(this.path, JSON.stringify(this.contents, null, 4));
         this.__dirty = false;
-        events.emit('verbose', 'Wrote to pods.json.');
+        events.emit("verbose", "Wrote to pods.json.");
     }
 };
 
@@ -181,7 +195,10 @@ PodsJson.prototype.decrementDeclaration = function (name) {
 PodsJson.prototype.__setJson = function (kind, name, json) {
     this.contents[kind][name] = Object.assign({}, json);
     this.__dirty = true;
-    events.emit('verbose', util.format('Set pods.json for `%s` - `%s`', kind, name));
+    events.emit(
+        "verbose",
+        util.format("Set pods.json for `%s` - `%s`", kind, name)
+    );
 };
 
 // sample json for library

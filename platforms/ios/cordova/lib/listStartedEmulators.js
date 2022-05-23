@@ -17,7 +17,9 @@
        under the License.
 */
 
-const { superspawn: { spawn } } = require('cordova-common');
+const {
+    superspawn: { spawn }
+} = require("cordova-common");
 
 /**
  * Gets list of running iOS simulators
@@ -34,17 +36,21 @@ const { superspawn: { spawn } } = require('cordova-common');
  *
  * Alternativly, remove this file. It is not documented in Cordova and not used anywhere in our code base.
  */
-function listStartedEmulators () {
+function listStartedEmulators() {
     // wrap exec call into promise
-    return spawn('ps', ['aux'])
-        .then(output => {
+    return spawn("ps", ["aux"])
+        .then((output) => {
             if (output.match(/[i]OS Simulator/)) {
-                return spawn('defaults', ['read', 'com.apple.iphonesimulator', '"SimulateDevice"']);
+                return spawn("defaults", [
+                    "read",
+                    "com.apple.iphonesimulator",
+                    '"SimulateDevice"'
+                ]);
             }
 
-            return '';
+            return "";
         })
-        .then(output => output.split('\n'));
+        .then((output) => output.split("\n"));
 }
 
 exports.run = listStartedEmulators;

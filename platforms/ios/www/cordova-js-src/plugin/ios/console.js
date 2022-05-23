@@ -17,11 +17,11 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
 // ------------------------------------------------------------------------------
 
-var logger = require('cordova/plugin/ios/logger');
+var logger = require("cordova/plugin/ios/logger");
 
 // ------------------------------------------------------------------------------
 // object that we're exporting
@@ -46,7 +46,7 @@ var Timers = {};
 // ------------------------------------------------------------------------------
 // used for unimplemented methods
 // ------------------------------------------------------------------------------
-function noop () {}
+function noop() {}
 
 // ------------------------------------------------------------------------------
 // used for unimplemented methods
@@ -56,7 +56,7 @@ console.useLogger = function (value) {
 
     if (UseLogger) {
         if (logger.useConsole()) {
-            throw new Error('console and logger are too intertwingly');
+            throw new Error("console and logger are too intertwingly");
         }
     }
 
@@ -97,8 +97,11 @@ console.debug = function () {
 console.assert = function (expression) {
     if (expression) return;
 
-    var message = logger.format.apply(logger.format, [].slice.call(arguments, 1));
-    console.log('ASSERT: ' + message);
+    var message = logger.format.apply(
+        logger.format,
+        [].slice.call(arguments, 1)
+    );
+    console.log("ASSERT: " + message);
 };
 
 // ------------------------------------------------------------------------------
@@ -106,7 +109,7 @@ console.clear = function () {};
 
 // ------------------------------------------------------------------------------
 console.dir = function (object) {
-    console.log('%o', object);
+    console.log("%o", object);
 };
 
 // ------------------------------------------------------------------------------
@@ -135,12 +138,12 @@ console.time = function (name) {
 console.timeEnd = function (name) {
     var timeStart = Timers[name];
     if (!timeStart) {
-        console.warn('unknown timer: ' + name);
+        console.warn("unknown timer: " + name);
         return;
     }
 
     var timeElapsed = new Date().valueOf() - timeStart;
-    console.log(name + ': ' + timeElapsed + 'ms');
+    console.log(name + ": " + timeElapsed + "ms");
 };
 
 // ------------------------------------------------------------------------------
@@ -160,17 +163,21 @@ console.exception = console.log;
 
 // ------------------------------------------------------------------------------
 console.table = function (data, columns) {
-    console.log('%o', data);
+    console.log("%o", data);
 };
 
 // ------------------------------------------------------------------------------
 // return a new function that calls both functions passed as args
 // ------------------------------------------------------------------------------
-function wrappedOrigCall (orgFunc, newFunc) {
+function wrappedOrigCall(orgFunc, newFunc) {
     return function () {
         var args = [].slice.call(arguments);
-        try { orgFunc.apply(WinConsole, args); } catch (e) {}
-        try { newFunc.apply(console, args); } catch (e) {}
+        try {
+            orgFunc.apply(WinConsole, args);
+        } catch (e) {}
+        try {
+            newFunc.apply(console, args);
+        } catch (e) {}
     };
 }
 
@@ -180,7 +187,7 @@ function wrappedOrigCall (orgFunc, newFunc) {
 // with one that calls both
 // ------------------------------------------------------------------------------
 for (var key in console) {
-    if (typeof WinConsole[key] === 'function') {
+    if (typeof WinConsole[key] === "function") {
         console[key] = wrappedOrigCall(WinConsole[key], console[key]);
     }
 }

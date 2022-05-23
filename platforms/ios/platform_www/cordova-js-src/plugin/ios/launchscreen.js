@@ -17,16 +17,16 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
-var exec = require('cordova/exec');
+var exec = require("cordova/exec");
 
 var launchscreen = {
     show: function () {
-        exec(null, null, 'LaunchScreen', 'show', []);
+        exec(null, null, "LaunchScreen", "show", []);
     },
     hide: function () {
-        exec(null, null, 'LaunchScreen', 'hide', []);
+        exec(null, null, "LaunchScreen", "hide", []);
     }
 };
 

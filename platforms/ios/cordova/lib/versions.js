@@ -20,40 +20,39 @@
 const {
     CordovaError,
     superspawn: { spawn }
-} = require('cordova-common');
-const semver = require('semver');
+} = require("cordova-common");
+const semver = require("semver");
 
-function fetchSdkVersionByType (sdkType) {
-    return spawn('xcodebuild', ['-showsdks'])
-        .then(output => {
-            const regexSdk = new RegExp(`^${sdkType} \\d`);
+function fetchSdkVersionByType(sdkType) {
+    return spawn("xcodebuild", ["-showsdks"]).then((output) => {
+        const regexSdk = new RegExp(`^${sdkType} \\d`);
 
-            const versions = output.split('\n')
-                .filter(line => line.trim().match(regexSdk))
-                .map(line => line.match(/\d+\.\d+/)[0])
-                .sort(exports.compareVersions);
+        const versions = output
+            .split("\n")
+            .filter((line) => line.trim().match(regexSdk))
+            .map((line) => line.match(/\d+\.\d+/)[0])
+            .sort(exports.compareVersions);
 
-            console.log(versions[0]);
-        });
+        console.log(versions[0]);
+    });
 }
 
 exports.get_apple_ios_version = () => {
-    return fetchSdkVersionByType('iOS');
+    return fetchSdkVersionByType("iOS");
 };
 
 exports.get_apple_osx_version = () => {
-    return fetchSdkVersionByType('macOS');
+    return fetchSdkVersionByType("macOS");
 };
 
 exports.get_apple_xcode_version = () => {
-    return spawn('xcodebuild', ['-version'])
-        .then(output => {
-            const versionMatch = /Xcode (.*)/.exec(output);
+    return spawn("xcodebuild", ["-version"]).then((output) => {
+        const versionMatch = /Xcode (.*)/.exec(output);
 
-            if (!versionMatch) return Promise.reject(output);
+        if (!versionMatch) return Promise.reject(output);
 
-            return versionMatch[1];
-        });
+        return versionMatch[1];
+    });
 };
 
 /**
@@ -62,7 +61,7 @@ exports.get_apple_xcode_version = () => {
  *                           or rejected in case of error
  */
 exports.get_ios_deploy_version = () => {
-    return spawn('ios-deploy', ['--version']);
+    return spawn("ios-deploy", ["--version"]);
 };
 
 /**
@@ -71,7 +70,7 @@ exports.get_ios_deploy_version = () => {
  *                           or rejected in case of error
  */
 exports.get_cocoapods_version = () => {
-    return spawn('pod', ['--version']);
+    return spawn("pod", ["--version"]);
 };
 
 /**
@@ -80,7 +79,7 @@ exports.get_cocoapods_version = () => {
  *                           or rejected in case of error
  */
 exports.get_ios_sim_version = () => {
-    return spawn('ios-sim', ['--version']);
+    return spawn("ios-sim", ["--version"]);
 };
 
 /**
@@ -89,13 +88,22 @@ exports.get_ios_sim_version = () => {
  * @return {Promise}         Promise that either resolved with tool version
  *                                   or rejected in case of error
  */
-exports.get_tool_version = toolName => {
+exports.get_tool_version = (toolName) => {
     switch (toolName) {
-    case 'xcodebuild': return exports.get_apple_xcode_version();
-    case 'ios-sim': return exports.get_ios_sim_version();
-    case 'ios-deploy': return exports.get_ios_deploy_version();
-    case 'pod': return exports.get_cocoapods_version();
-    default: return Promise.reject(new CordovaError(`${toolName} is not valid tool name. Valid names are: 'xcodebuild', 'ios-sim', 'ios-deploy', and 'pod'`));
+        case "xcodebuild":
+            return exports.get_apple_xcode_version();
+        case "ios-sim":
+            return exports.get_ios_sim_version();
+        case "ios-deploy":
+            return exports.get_ios_deploy_version();
+        case "pod":
+            return exports.get_cocoapods_version();
+        default:
+            return Promise.reject(
+                new CordovaError(
+                    `${toolName} is not valid tool name. Valid names are: 'xcodebuild', 'ios-sim', 'ios-deploy', and 'pod'`
+                )
+            );
     }
 };
 
@@ -108,7 +116,7 @@ exports.get_tool_version = toolName => {
  *                                    positive otherwise and 0 if versions are equal.
  */
 exports.compareVersions = (...args) => {
-    const coerceToSemverIfInvalid = v => {
+    const coerceToSemverIfInvalid = (v) => {
         const semverVersion = semver.parse(v) || semver.coerce(v);
         if (!semverVersion) throw new TypeError(`Invalid Version: ${v}`);
         return semverVersion;
