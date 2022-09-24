@@ -364,8 +364,8 @@ function onDeviceReady() {
         },
         pages: data.game2022,
         event: {
-            code: "2022casj",
-            editable: true
+            code: "2022cc",
+            editable: false
         },
         upload: {
             passwordHash:
