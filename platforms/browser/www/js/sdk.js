@@ -218,7 +218,7 @@ const ScoutingAppSDK = function (element, config) {
     this.formatData = (data) => {
         data[3] = data[3].substring(1, data[3].length - 1).split("|").join(", ");
         data[4] = data[4].substring(1, data[4].length - 1).split("|").map(outcome => {
-            return ({'u': "upper", 'l': "lower", 'm': "missed"})[outcome] || "other";
+            return ({"'u'": "upper", "'l'": "lower", "'m'": "missed"})[outcome] || "other";
         }).join(", ");
         data[5] = ["None", "Low", "Mid", "High", "Traversal"][data[5]];
         data[6] = ({"TRUE": "yes", "FALSE": "no"})[data[6]];
