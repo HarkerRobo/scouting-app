@@ -775,7 +775,7 @@ body {
     .data-window > table {
         overflow-x: initial;
     }
-    .data-window {
+    .data-window-visible {
         overflow-x: auto;
     }
 }

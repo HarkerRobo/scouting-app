@@ -860,6 +860,7 @@ const ScoutingAppSDK = function (element, config) {
                                 element.querySelector(".data-table > tbody").innerHTML = csv.map((data) => {
                                     return `<tr>${data.map(cell => `<td>${cell}</td>`).join("")}</tr>`;
                                 }).join("");
+                                element.querySelector(".data-window").classList.add("data-window-visible");
                                 element.querySelector(".data-table").style.display = "block";
                             } else {
                                 element.querySelector(".red").innerHTML =
