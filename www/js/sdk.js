@@ -283,6 +283,25 @@ const ScoutingAppSDK = function (element, config) {
                     _eventCode = config.event.code;
                     await this.setEventCode(_eventCode);
                 }
+                let latestMatch = "";
+                if(config.latest.autofill) {
+                    let latestMatchData = await (
+                        await fetch(
+                            `${
+                                config.upload.endpoint
+                            }/latest?key=${encodeURIComponent(
+                                await getKey()
+                            )}&eventcode=${encodeURIComponent(
+                                _eventCode
+                            )}&offset=${encodeURIComponent(
+                                config.latest.offset
+                            )}`
+                        )
+                    ).json();
+                    if(latestMatchData.success) {
+                        latestMatch = latestMatchData.contents + 1;
+                    }
+                }
                 element.innerHTML = `
 					<div class="home-window">
 						<div class="button-row">
@@ -298,7 +317,7 @@ const ScoutingAppSDK = function (element, config) {
                         )}"${config.event.editable ? "" : " readonly"} />
 						<h2>Match Number:</h2>
 						<input class="match-number" type="number" min="0" value="${this.escape(
-                            _matchNumber
+                            _matchNumber || latestMatch
                         )}" />
 						<h2>Team:</h2>
 						<select class="team">
@@ -2011,6 +2030,15 @@ const ScoutingAppSDK = function (element, config) {
             configuration.data.csvHeaders.length
         ) {
             configuration.data.csvHeaders = ["matchNum", "teamNum", "teamColor", "locations", "outcomes", "climbLevel", "initLinePassed", "autonCount", "humanPlayerScored", "climbTime", "brickTime", "defenseTime", "scouterName", "comments"];
+        }
+        if (configuration.latest == null) {
+            configuration.latest = {};
+        }
+        if (configuration.latest.autofill == null) {
+            configuration.latest.autofill = true;
+        }
+        if (configuration.latest.offset == null) {
+            configuration.latest.offset = 0;
         }
         document.documentElement.style.setProperty(
             "--backgroundColor",

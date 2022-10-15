@@ -375,6 +375,10 @@ function onDeviceReady() {
         data: {
             csvHeaders: ["matchNum", "teamNum", "teamColor", "locations", "outcomes", "climbLevel", "initLinePassed", "autonCount", "humanPlayerScored", "climbTime", "brickTime", "defenseTime", "scouterName", "comments"],
             dataHeaders: ["match", "team", "color", "locations", "outcomes", "climb", "initLine", "autonCount", "humanPlayer", "climbTime", "brickTime", "defenseTime", "scouter", "comments"]
+        },
+        latest: {
+            autofill: true,
+            offset: 0
         }
     });
 
