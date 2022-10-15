@@ -770,3 +770,12 @@ body {
     background-color: var(--primaryBackgroundColor);
     color: var(--backgroundColor);
 }
+
+@media (max-width: 500px) {
+    .data-window > table {
+        overflow-x: initial;
+    }
+    .data-window {
+        overflow-x: auto;
+    }
+}
