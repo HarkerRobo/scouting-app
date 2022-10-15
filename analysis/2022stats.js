@@ -565,7 +565,7 @@
                     // console.log(match.alliances[color].team_keys, combined[i][j].teamNum);
                     let number =
                         match.alliances[color].team_keys.findIndex(
-                            (key) => key == `frc${combined[i][j].teamNum}`
+                            (key) => (key == `frc${combined[i][j].teamNum}` || (args.eventCode == "2022cacc" && combined[i][j].teamNum == 9973 && key == "frc2073B"))
                         ) + 1;
                     // console.log(`${color} ${number}`);
                     let name = combined[i][j].scouterName;
