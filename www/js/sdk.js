@@ -172,7 +172,59 @@ const ScoutingAppSDK = function (element, config) {
         return normalized.join("");
     };
 
-    this.formatData = (eventCode, matchNumber, teamNumber, data) => {};
+    this.formatCSV = async (eventCode, matchNumber, teamNumber, data) => {
+        let csv = [];
+        csv.push(matchNumber);
+        csv.push(teamNumber);
+        let color = await this.getTeamColor(eventCode, matchNumber, teamNumber);
+        csv.push(color);
+        csv.push(
+            `[${data.auto_locations
+                .map((loc) => {
+                    return parseInt(loc.index);
+                })
+                .concat(
+                    data.teleop_locations.map((loc) => {
+                        return parseInt(loc.index);
+                    })
+                )
+                .join("|")}]`
+        );
+        csv.push(
+            `[${data.auto_locations
+                .map((loc) => {
+                    return `'${loc.value}'`;
+                })
+                .concat(
+                    data.teleop_locations.map((loc) => {
+                        return `'${loc.value}'`;
+                    })
+                )
+                .join("|")}]`
+        );
+        csv.push(parseInt(data.climb));
+        csv.push(data.initiation_line ? "TRUE" : "FALSE");
+        csv.push(data.auto_locations.length);
+        csv.push(data.human_player ? "TRUE" : "FALSE");
+        csv.push(data.climb_time / 1000);
+        csv.push(data.brick_time / 1000);
+        csv.push(data.defense_time / 1000);
+        csv.push(this.normalize(await this.getUser()));
+        csv.push(this.normalize(data.notes));
+        let formatted = csv.join(",");
+        return formatted;
+    };
+
+    this.formatData = (data) => {
+        data[3] = data[3].substring(1, data[3].length - 1).split("|").join(", ");
+        data[4] = data[4].substring(1, data[4].length - 1).split("|").map(outcome => {
+            return ({'u': "upper", 'l': "lower", 'm': "missed"})[outcome] || "other";
+        }).join(", ");
+        data[5] = ["None", "Low", "Mid", "High", "Traversal"][data[5]];
+        data[6] = ({"TRUE": "yes", "FALSE": "no"})[data[6]];
+        data[8] = ({"TRUE": "yes", "FALSE": "no"})[data[8]];
+        return data;
+    }
 
     this.showLoginPage = () => {
         return new Promise(async (resolve, reject) => {
@@ -635,22 +687,22 @@ const ScoutingAppSDK = function (element, config) {
                     await this.setEventCode(_eventCode);
                 }
                 element.innerHTML = `
-					<div class="download-window">
-						<div class="button-row">
-							<button class="log-out">Log Out</button>
-							<button class="scout">Scout</button>
-							<button class="switch-accounts">Switch Accounts</button>
-						</div>
-						<h2>Event Code:</h2>
-						<input class="event-code" value="${this.escape(
+                    <div class="download-window">
+                        <div class="button-row">
+                            <button class="log-out">Log Out</button>
+                            <button class="scout">Scout</button>
+                            <button class="switch-accounts">Switch Accounts</button>
+                        </div>
+                        <h2>Event Code:</h2>
+                        <input class="event-code" value="${this.escape(
                             _eventCode || (await this.getEventCode())
                         )}"${config.event.editable ? "" : " readonly"} />
-						<h2>Filename:</h2>
-						<input class="filename" value="data.csv" />
-						<button class="download-csv">Download CSV</button>
-						<h3 class="red">&nbsp;</h3>
-					</div>
-				`;
+                        <h2>Filename:</h2>
+                        <input class="filename" value="data.csv" />
+                        <button class="download-csv">Download CSV</button>
+                        <h3 class="red">&nbsp;</h3>
+                    </div>
+                `;
                 element.querySelector(".button-row > button.log-out").onclick =
                     async () => {
                         await this.logout();
@@ -693,7 +745,7 @@ const ScoutingAppSDK = function (element, config) {
                                 element.querySelector(".red").innerHTML =
                                     "&nbsp;";
                                 let csv = [
-                                    "matchNum,teamNum,teamColor,locations,outcomes,climbLevel,initLinePassed,autonCount,humanPlayerScored,climbTime,brickTime,defenseTime,scouterName,comments"
+                                    config.data.csvHeaders.join(",")
                                 ];
                                 let contents = data.contents;
                                 for (let i = 0; i < contents.length; i++) {
@@ -713,6 +765,102 @@ const ScoutingAppSDK = function (element, config) {
                                 link.click();
                                 link.remove();
                                 console.log(joined);
+                            } else {
+                                element.querySelector(".red").innerHTML =
+                                    data.error || "Unknown error.";
+                            }
+                        } catch (err) {}
+                    };
+            }
+            resolve();
+        });
+    };
+
+    this.showDataPage = (_eventCode = "") => {
+        return new Promise(async (resolve, reject) => {
+            if ((await this.getUser()) == "") {
+                await this.showLoginPage();
+            } else {
+                if (config.event.editable == false && config.event.code != "") {
+                    _eventCode = config.event.code;
+                    await this.setEventCode(_eventCode);
+                }
+                element.innerHTML = `
+                    <div class="data-window">
+                        <div class="button-row">
+                            <button class="log-out">Log Out</button>
+                            <button class="scout">Scout</button>
+                            <button class="switch-accounts">Switch Accounts</button>
+                        </div>
+                        <h2>Event Code:</h2>
+                        <input class="event-code" value="${this.escape(
+                            _eventCode || (await this.getEventCode())
+                        )}"${config.event.editable ? "" : " readonly"} />
+                        <h2>Filename:</h2>
+                        <button class="show-data">Show Data</button>
+                        <h3 class="red">&nbsp;</h3>
+                        <table class="data-table" style="display: none;">
+                            <thead>
+                                <tr>
+                                    ${config.data.dataHeaders.map(header => `<th>${header}</th>`).join("")}
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                element.querySelector(".button-row > button.log-out").onclick =
+                    async () => {
+                        await this.logout();
+                        await this.showLoginPage();
+                        window.location.href = "./";
+                    };
+                element.querySelector(
+                    ".button-row > button.switch-accounts"
+                ).onclick = async () => {
+                    await this.logoutUser();
+                    await this.showLoginPage();
+                    window.location.href = "./";
+                };
+                element.querySelector(".button-row > button.scout").onclick =
+                    async () => {
+                        await this.showHomePage();
+                        window.location.href = "./";
+                    };
+                element.querySelector("button.show-data").onclick =
+                    async () => {
+                        let eventCode = element.querySelector(
+                            ".data-window > input.event-code"
+                        ).value;
+                        try {
+                            let data = await (
+                                await fetch(
+                                    `${
+                                        config.upload.endpoint
+                                    }/data?key=${encodeURIComponent(
+                                        await getKey()
+                                    )}&eventcode=${encodeURIComponent(
+                                        eventCode
+                                    )}`
+                                )
+                            ).json();
+                            if (data.success) {
+                                element.querySelector(".red").innerHTML =
+                                    "&nbsp;";
+                                let csv = [];
+                                let contents = data.contents;
+                                for (let i = 0; i < contents.length; i++) {
+                                    csv.push(contents[i].contents.split(","));
+                                }
+                                for(let i = 0; i < csv.length; i++) {
+                                    csv[i] = await this.formatData(csv[i]);
+                                }
+                                element.querySelector(".data-table > tbody").innerHTML = csv.map((data) => {
+                                    return `<tr>${data.map(cell => `<td>${cell}</td>`).join("")}</tr>`;
+                                }).join("");
+                                element.querySelector(".data-table").style.display = "block";
                             } else {
                                 element.querySelector(".red").innerHTML =
                                     data.error || "Unknown error.";
@@ -1671,7 +1819,7 @@ const ScoutingAppSDK = function (element, config) {
                 let id = this.random();
                 pendingFunctions.push(async () => {
                     try {
-                        let formatted = await this.formatData(
+                        let formatted = await this.formatCSV(
                             eventCode,
                             matchNumber,
                             teamNumber,
@@ -1750,7 +1898,7 @@ const ScoutingAppSDK = function (element, config) {
                 );
             } else if (component.type == "qrcode") {
                 let id = this.random();
-                let formatted = await this.formatData(
+                let formatted = await this.formatCSV(
                     eventCode,
                     matchNumber,
                     teamNumber,
@@ -1781,7 +1929,7 @@ const ScoutingAppSDK = function (element, config) {
                     )}" style="display: none;"></div>`
                 );
             } else if (component.type == "data") {
-                let formatted = await this.formatData(
+                let formatted = await this.formatCSV(
                     eventCode,
                     matchNumber,
                     teamNumber,
@@ -1854,6 +2002,15 @@ const ScoutingAppSDK = function (element, config) {
             configuration.theme.disabledColor == ""
         ) {
             configuration.theme.disabledColor = "#747474";
+        }
+        if (configuration.data == null) {
+            configuration.data = {};
+        }
+        if (
+            configuration.data.csvHeaders == null ||
+            configuration.data.csvHeaders.length
+        ) {
+            configuration.data.csvHeaders = ["matchNum", "teamNum", "teamColor", "locations", "outcomes", "climbLevel", "initLinePassed", "autonCount", "humanPlayerScored", "climbTime", "brickTime", "defenseTime", "scouterName", "comments"];
         }
         document.documentElement.style.setProperty(
             "--backgroundColor",

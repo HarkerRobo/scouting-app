@@ -146,7 +146,8 @@ body {
 }
 
 .home-window > h2,
-.download-window > h2 {
+.download-window > h2,
+.data-window > h2 {
     color: var(--contentColor);
     text-align: center;
     margin: 0;
@@ -170,7 +171,8 @@ body {
 
 .home-window input,
 .home-window select,
-.download-window input {
+.download-window input,
+.data-window input {
     background-color: var(--backroundColor) !important;
     border: 2px solid var(--contentColor);
     border-radius: 5px;
@@ -187,7 +189,8 @@ body {
 }
 
 .home-window input[readonly],
-.download-window input[readonly] {
+.download-window input[readonly],
+.data-window input[readonly] {
     background-color: var(--disabledColor) !important;
 }
 
@@ -202,7 +205,8 @@ body {
 
 .home-window input:focus,
 .home-window select:focus,
-.download-window input:focus {
+.download-window input:focus,
+.data-window input:focus {
     outline: 0;
     border: 4px solid var(--contentColor);
     padding: 8px;
@@ -210,7 +214,8 @@ body {
 
 .home-window button,
 .scanner-window button,
-.download-window button {
+.download-window button,
+.data-window button {
     background-color: var(--primaryBackgroundColor);
     border: 2px solid var(--primaryBackgroundColor);
     border-radius: 5px;
@@ -710,7 +715,8 @@ body {
 }
 
 .component-upload > h3,
-.download-window > h3 {
+.download-window > h3,
+.data-window > h3 {
     text-align: center;
     color: var(--contentColor);
     width: calc(100% - 20px);
@@ -721,10 +727,46 @@ body {
 }
 
 .component-upload > h3.red,
-.download-window > h3.red {
+.download-window > h3.red,
+.data-window > h3.red {
     color: #ff0000;
 }
 
 .component-upload > h3.primary {
     color: var(--primaryBackgroundColor);
+}
+
+.data-window > table {
+    color: var(--contentColor);
+    overflow-x: auto;
+    border-collapse: collapse;
+}
+
+.data-window > table td,
+.data-window > table th {
+    border: 1px solid var(--contentColor);
+    padding: 8px;
+    color: var(--contentColor);
+}
+
+.data-window > table td:hover {
+    background-color: var(--backgroundColor);
+    filter: brightness(0.8);
+}
+
+.data-window > table tbody > tr {
+    background-color: var(--backgroundColor);
+}
+
+.data-window > table tbody > tr:nth-child(even) {
+    background-color: var(--backgroundColor);
+    filter: brightness(0.9);
+}
+
+.data-window > table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: var(--primaryBackgroundColor);
+    color: var(--backgroundColor);
 }

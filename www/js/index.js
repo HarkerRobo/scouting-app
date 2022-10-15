@@ -371,10 +371,14 @@ function onDeviceReady() {
             passwordHash:
                 "0801b3a5af3f6f6387f03be37307856b755a60d9572e9b3131b0a633fdc9ba17",
             endpoint: "https://harkerrobo.kabirramzan.com/scoutingapp/api/v1"
+        },
+        data: {
+            csvHeaders: ["matchNum", "teamNum", "teamColor", "locations", "outcomes", "climbLevel", "initLinePassed", "autonCount", "humanPlayerScored", "climbTime", "brickTime", "defenseTime", "scouterName", "comments"],
+            dataHeaders: ["match", "team", "color", "locations", "outcomes", "climb", "initLine", "autonCount", "humanPlayer", "climbTime", "brickTime", "defenseTime", "scouter", "comments"]
         }
     });
 
-    sdk.formatData = async (eventCode, matchNumber, teamNumber, data) => {
+    sdk.formatCSV = async (eventCode, matchNumber, teamNumber, data) => {
         console.log(data);
         let csv = [];
         csv.push(matchNumber);
@@ -420,6 +424,18 @@ function onDeviceReady() {
         return formatted;
     };
 
+    sdk.formatData = (data) => {
+        data[3] = data[3].substring(1, data[3].length - 1).split("|").join(", ");
+        data[4] = data[4].substring(1, data[4].length - 1).split("|").map(outcome => {
+            return ({'u': "upper", 'l': "lower", 'm': "missed"})[outcome] || "other";
+        }).join(", ");
+        data[5] = ["None", "Low", "Mid", "High", "Traversal"][data[5]];
+        data[6] = ({"TRUE": "yes", "FALSE": "no"})[data[6]];
+        data[8] = ({"TRUE": "yes", "FALSE": "no"})[data[8]];
+        console.log(data);
+        return data;
+    }
+
     if (
         ["download", "download.html"].includes(
             window.location.pathname.split("/")[
@@ -428,6 +444,14 @@ function onDeviceReady() {
         )
     ) {
         sdk.showDownloadPage();
+    } else if(
+        ["data", "data.html"].includes(
+            window.location.pathname.split("/")[
+                window.location.pathname.split("/").length - 1
+            ]
+        )
+    ) {
+        sdk.showDataPage();
     } else {
         sdk.showLoginPage();
     }
