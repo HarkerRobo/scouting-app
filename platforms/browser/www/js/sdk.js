@@ -796,7 +796,6 @@ const ScoutingAppSDK = function (element, config) {
                         <input class="event-code" value="${this.escape(
                             _eventCode || (await this.getEventCode())
                         )}"${config.event.editable ? "" : " readonly"} />
-                        <h2>Filename:</h2>
                         <button class="show-data">Show Data</button>
                         <h3 class="red">&nbsp;</h3>
                         <table class="data-table" style="display: none;">
