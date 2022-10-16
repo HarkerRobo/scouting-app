@@ -285,25 +285,9 @@ const ScoutingAppSDK = function (element, config) {
                 }
                 let latestMatch = "";
                 if(config.latest.autofill) {
-                    try {
-                        let latestMatchData = await (
-                            await fetch(
-                                `${
-                                    config.upload.endpoint
-                                }/latest?key=${encodeURIComponent(
-                                    await getKey()
-                                )}&eventcode=${encodeURIComponent(
-                                    _eventCode
-                                )}&offset=${encodeURIComponent(
-                                    config.latest.offset
-                                )}`
-                            )
-                        ).json();
-                        if(latestMatchData.success) {
-                            latestMatch = latestMatchData.contents + 1;
-                        }
-                    } catch(err) {
-                        
+                    latestMatchData = await this.getLatestMatch(_eventCode);
+                    if(latestMatchData.success) {
+                        latestMatch = latestMatchData.contents + 1;
                     }
                 }
                 element.innerHTML = `
@@ -946,6 +930,36 @@ const ScoutingAppSDK = function (element, config) {
             resolve();
         });
     };
+
+    this.getLatestMatch = (eventCode) => {
+        return new Promise(async (resolve, reject) => {
+            setTimeout(() => {
+                resolve({
+                    success: false
+                });
+            }, 5000);
+            try {
+                let latestMatchData = await (
+                    await fetch(
+                        `${
+                            config.upload.endpoint
+                        }/latest?key=${encodeURIComponent(
+                            await getKey()
+                        )}&eventcode=${encodeURIComponent(
+                            eventCode
+                        )}&offset=${encodeURIComponent(
+                            config.latest.offset
+                        )}`
+                    )
+                ).json();
+                resolve(latestMatchData);
+            } catch(err) {
+                resolve({
+                    success: false
+                });
+            }
+        });
+    }
 
     this.getUser = () => {
         return new Promise(async (resolve, reject) => {
