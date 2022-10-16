@@ -6,9 +6,21 @@ from collections import OrderedDict
 import requests as rq
 import json
 import random
+import sys
 
-apikey = '' #enter tba api key
-eventkeys = ['flwp', 'mndu', 'mndu2', 'tant', 'tuis3', 'caph', 'flor', 'nyro', 'scan', 'mxmo', 'okok', 'azfl', 'caoc', 'cave', 'ausc', 'nytr', 'tuis', 'flta', 'paca', 'ilpe', 'ksla', 'azva', 'casd', 'casf', 'tuis2', 'nyli', 'ohcl', 'iacf', 'mokc', 'ndgf', 'wimi', 'code', 'mxto', 'cada', 'camb', 'nyli2', 'tnkn', 'lake', 'mosl', 'wila', 'idbo', 'cafr', 'nvlv', 'cala', 'qcmo1', 'qcmo2', 'alhu', 'ilch', 'mnmi', 'mnmi2', 'oktu', 'utwv', 'caav', 'qcmo3', 'nyny', 'casj', 'cc'] #enter list of tba event keys
+rawArgs = sys.argv[1:]
+args = {}
+for i in range(len(rawArgs)):
+        if(rawArgs[i] == '--key' and 'key' not in args):
+                args['key'] = rawArgs[i + 1]
+        if(rawArgs[i] == '--endpoint' and 'endpoint' not in args):
+                args['endpoint'] = rawArgs[i + 1]
+        if(rawArgs[i] == '--eventCode' and 'eventCode' not in args):
+                args['eventCode'] = rawArgs[i + 1]
+
+apikey = args['key'] if 'key' in args else '' #enter scouting app api key
+endpoint = args['endpoint'] if 'endpoint' in args else 'https://harkerrobo.kabirramzan.com/scoutingapp/api/v1'
+eventkeys = [args['eventCode']] if 'eventCode' in args else map(lambda code: "2022" + code, ['flwp', 'mndu', 'mndu2', 'tant', 'tuis3', 'caph', 'flor', 'nyro', 'scan', 'mxmo', 'okok', 'azfl', 'caoc', 'cave', 'ausc', 'nytr', 'tuis', 'flta', 'paca', 'ilpe', 'ksla', 'azva', 'casd', 'casf', 'tuis2', 'nyli', 'ohcl', 'iacf', 'mokc', 'ndgf', 'wimi', 'code', 'mxto', 'cada', 'camb', 'nyli2', 'tnkn', 'lake', 'mosl', 'wila', 'idbo', 'cafr', 'nvlv', 'cala', 'qcmo1', 'qcmo2', 'alhu', 'ilch', 'mnmi', 'mnmi2', 'oktu', 'utwv', 'caav', 'qcmo3', 'nyny', 'casj', 'cc'])
 predavg = list()
 preds = 0
 tnog = 0
@@ -29,8 +41,9 @@ def reject_outliers_iqr(data):
 
 #run for all events in list
 for event in eventkeys:
-        res = rq.get('https://www.thebluealliance.com/api/v3/event/2022'+event+'/matches?X-TBA-Auth-Key='+apikey) #web scraping to get data using TBA api
-        data1 = res.json()
+        res = rq.get(endpoint+'/matches_advanced?key='+apikey+'&eventcode='+event) #web scraping to get data using TBA api
+        print(endpoint+'/matches_advanced?key='+apikey+'&eventcode='+event)
+        data1 = json.loads(res.json()["contents"])
         teamdata = OrderedDict()
         teamdata1 = OrderedDict()
         teamdata2 = OrderedDict()
@@ -132,6 +145,7 @@ for event in eventkeys:
                                 count = count + 1
 
         #get playoff matches FOR TESTING ONLY
+        """
         matchestobepredicted = OrderedDict()
         for x in (data1):
                 if (x['comp_level'] != 'qm'):
@@ -150,6 +164,7 @@ for event in eventkeys:
                         matchestobepredicted[count] = update
                 count = count + 1
         print(matchestobepredicted)
+        """
 
         datadict = OrderedDict()
 
@@ -204,7 +219,7 @@ for event in eventkeys:
         #print all the data
         for key, value in sorteddict.items():
                 print(key, value)
-
+        """
         print('')
         print('')
         print('')
@@ -220,8 +235,10 @@ for event in eventkeys:
 
         for key, value in sorteddict2.items():
                 print(key, value)
+        """
 
         #uses calculated scores to predict playoff match results, checks against actual result
+        """
         predictionsum = 0
         matchsum = 0
         for x, match in matchestobepredicted.items():
@@ -269,6 +286,8 @@ for event in eventkeys:
         predavg.append(predictionsum/matchsum)
         preds = preds + predictionsum
         tnog = matchsum + tnog
+        """
+"""        
 print(predavg)
 
 #uncomment following two lines to show distribution of prediction accuracy
@@ -287,3 +306,4 @@ print(100*sum1/sum2)
 print(preds)
 print(tnog)
 print(100*preds/tnog)
+"""
