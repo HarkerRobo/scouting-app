@@ -285,21 +285,25 @@ const ScoutingAppSDK = function (element, config) {
                 }
                 let latestMatch = "";
                 if(config.latest.autofill) {
-                    let latestMatchData = await (
-                        await fetch(
-                            `${
-                                config.upload.endpoint
-                            }/latest?key=${encodeURIComponent(
-                                await getKey()
-                            )}&eventcode=${encodeURIComponent(
-                                _eventCode
-                            )}&offset=${encodeURIComponent(
-                                config.latest.offset
-                            )}`
-                        )
-                    ).json();
-                    if(latestMatchData.success) {
-                        latestMatch = latestMatchData.contents + 1;
+                    try {
+                        let latestMatchData = await (
+                            await fetch(
+                                `${
+                                    config.upload.endpoint
+                                }/latest?key=${encodeURIComponent(
+                                    await getKey()
+                                )}&eventcode=${encodeURIComponent(
+                                    _eventCode
+                                )}&offset=${encodeURIComponent(
+                                    config.latest.offset
+                                )}`
+                            )
+                        ).json();
+                        if(latestMatchData.success) {
+                            latestMatch = latestMatchData.contents + 1;
+                        }
+                    } catch(err) {
+                        
                     }
                 }
                 element.innerHTML = `
